@@ -1,53 +1,139 @@
-# ==========================
-# Python
-# ==========================
-.venv/
-venv/
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
+# ==================================================
+# Environment variables and secrets
+# ==================================================
 
-# ==========================
-# Node.js / React
-# ==========================
-node_modules/
-dist/
-build/
-
-# ==========================
-# Environment Variables
-# ==========================
 .env
 .env.*
+*.env
 
-# ==========================
-# IDE
-# ==========================
-.vscode/settings.json
-.idea/
+# Allow safe environment templates
+!.env.example
+!*.env.example
 
-# ==========================
-# Operating System
-# ==========================
-Thumbs.db
-.DS_Store
 
-# ==========================
-# Logs
-# ==========================
+# ==================================================
+# Python
+# ==================================================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python package and build files
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+pip-wheel-metadata/
+
+# Test and coverage files
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.mypy_cache/
+.ruff_cache/
+
+# Python logs
 *.log
+
+
+# ==================================================
+# React / Vite / Node.js
+# ==================================================
+
+node_modules/
+frontend/node_modules/
+
+# Frontend production builds
+frontend/dist/
+frontend/build/
+dist/
+
+# Vite cache
+.vite/
+
+# npm and package-manager logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# ==========================
-# Python Testing
-# ==========================
-.pytest_cache/
-.coverage
+# Local npm cache
+.npm/
 
-# ==========================
-# Database
-# ==========================
+
+# ==================================================
+# IDE and editor files
+# ==================================================
+
+.vscode/
+.idea/
+*.code-workspace
+
+# Temporary editor files
+*.swp
+*.swo
+*~
+*.tmp
+
+
+# ==================================================
+# Operating-system files
+# ==================================================
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+.directory
+
+
+# ==================================================
+# Database backups and local database files
+# ==================================================
+
+*.backup
+*.dump
+*.sql.gz
+*.sqlite
 *.sqlite3
+*.db
+
+
+# ==================================================
+# Local uploads and generated files
+# ==================================================
+
+uploads/
+temp/
+tmp/
+.cache/
+
+
+# ==================================================
+# Security files
+# ==================================================
+
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
