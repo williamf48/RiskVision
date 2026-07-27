@@ -1,0 +1,170 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0f172a;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background-color: #111827;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  margin-bottom: 30px;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar li {
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.main-section {
+  flex: 1;
+  padding: 20px;
+}
+
+.header {
+  margin-bottom: 30px;
+}
+
+.main-dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background-color: #1e293b;
+  padding: 40px;
+  border-radius: 10px;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.risk-table-card {
+  background-color: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+  grid-column: span 2;
+}
+
+.risk-table-card h2 {
+  margin-bottom: 20px;
+}
+
+.risk-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.risk-table th {
+  text-align: left;
+  padding: 14px;
+  background-color: #334155;
+}
+
+.risk-table td {
+  padding: 14px;
+  border-bottom: 1px solid #334155;
+}
+
+.alerts-card {
+  background-color: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.alerts-card h2 {
+  margin-bottom: 20px;
+}
+
+.alert-item {
+  background-color: #0f172a;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.alert-item p {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.severity {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.high {
+  background-color: #dc2626;
+}
+
+.medium {
+  background-color: #ca8a04;
+}
+
+.critical {
+  background-color: #7f1d1d;
+}
+
+.watchlist-card {
+  background-color: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.watchlist-card h2 {
+  margin-bottom: 20px;
+}
+
+.watchlist-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.watchlist-table th {
+  text-align: left;
+  padding: 12px;
+  background-color: #334155;
+}
+
+.watchlist-table td {
+  padding: 12px;
+  border-bottom: 1px solid #334155;
+}
+
+.chart-card {
+  background-color: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+}
+.borrower-link {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.borrower-link:hover {
+  color: #3b82f6;
+}
