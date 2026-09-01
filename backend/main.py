@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine
+from connection import engine
 import pandas as pd
 
 # ============================================
@@ -21,13 +21,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ============================================
-# DATABASE CONNECTION
-# ============================================
-
-DATABASE_URL = "postgresql://postgres:william4256@localhost:5432/risk_platform"
-
-engine = create_engine(DATABASE_URL)
 
 # ============================================
 # HOME ROUTE

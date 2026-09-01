@@ -137,3 +137,5 @@ tmp/
 *.crt
 *.p12
 *.pfx
+# Microsoft Office temporary lock files
+~$*
