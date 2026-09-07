@@ -4,43 +4,52 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  ResponsiveContainer
-} from 'recharts'
+  ResponsiveContainer,
+} from "recharts";
 
-const data = [
-  {
-    borrower: 'ABC Infra',
-    risk: 92
-  },
-  {
-    borrower: 'Zenith',
-    risk: 84
-  },
-  {
-    borrower: 'Nova',
-    risk: 77
-  },
-  {
-    borrower: 'Delta',
-    risk: 69
+function RiskChart({ summary }) {
+
+  if (!summary) {
+    return (
+      <div className="chart-card">
+        <h2>Borrower Risk Distribution</h2>
+        <p>Loading...</p>
+      </div>
+    );
   }
-]
 
-function RiskChart() {
+  const data = [
+    {
+      classification: "Low Risk",
+      borrowers: summary.low_risk,
+    },
+    {
+      classification: "Watchlist",
+      borrowers: summary.watchlist,
+    },
+    {
+      classification: "High Risk",
+      borrowers: summary.high_risk,
+    },
+  ];
+
   return (
     <div className="chart-card">
       <h2>Borrower Risk Distribution</h2>
 
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data}>
-          <XAxis dataKey="borrower" />
-          <YAxis />
+          <XAxis dataKey="classification" />
+          <YAxis allowDecimals={false} />
           <Tooltip />
-          <Bar dataKey="risk" fill="#3b82f6" />
+          <Bar
+            dataKey="borrowers"
+            fill="#3b82f6"
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }
 
-export default RiskChart
+export default RiskChart;

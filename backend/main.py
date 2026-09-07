@@ -31,7 +31,6 @@ app.add_middleware(
 
 @app.get("/")
 def home():
-
     return {
         "message": "Risk Platform Running"
     }
@@ -202,6 +201,11 @@ def portfolio_summary():
     FROM borrowers
     """
 
+    total_exposure_query = """
+    SELECT COALESCE(SUM(loan_amount), 0) AS total_exposure
+    FROM borrowers
+    """
+
     high_risk_query = """
     SELECT COUNT(*) AS high_risk
     FROM risk_scores
@@ -236,6 +240,11 @@ def portfolio_summary():
         engine
     )
 
+    total_exposure = pd.read_sql(
+        total_exposure_query,
+        engine
+    )
+
     high_risk = pd.read_sql(
         high_risk_query,
         engine
@@ -265,6 +274,9 @@ def portfolio_summary():
 
         "total_borrowers":
             int(total_borrowers.iloc[0]["total_borrowers"]),
+
+        "total_exposure":
+            float(total_exposure.iloc[0]["total_exposure"]),
 
         "high_risk":
             int(high_risk.iloc[0]["high_risk"]),
