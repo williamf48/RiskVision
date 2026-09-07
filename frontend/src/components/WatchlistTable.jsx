@@ -26,8 +26,8 @@ function WatchlistTable() {
         </thead>
 
         <tbody>
-          {watchlist.map((item, index) => (
-            <tr key={index}>
+          {watchlist.map((item) => (
+            <tr key={item.borrower_id}>
               <td>{item.borrower_name}</td>
               <td>{item.score}</td>
               <td>{item.classification}</td>

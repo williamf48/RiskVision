@@ -407,3 +407,42 @@ React
 This is the legacy RiskVision intelligence layer.
 
 The September development objective is to evolve this into a historical Borrower Deterioration Intelligence Engine.
+## Portfolio Data Integrity Cleanup — 7 September 2026
+
+A database integrity audit identified that the 25-borrower mock portfolio had been imported twice.
+
+The obsolete import used borrower IDs 22–46. The canonical import used IDs 47–71.
+
+Evidence for selecting IDs 47–71 as canonical:
+
+- 25/25 risk scores match the current scoring methodology.
+- The later records contain populated sector and loan-amount data.
+- The canonical batch contains all 46 active alerts.
+- Each canonical borrower has one financial record and one risk-history record.
+- Only 9/25 scores in the obsolete batch matched the current methodology.
+
+A full PostgreSQL backup was created before cleanup.
+
+The obsolete IDs 22–46 and their associated risk scores, financial rows and risk-history rows were removed transactionally.
+
+A legacy prototype borrower, ABC Ltd (ID 1), was also removed after confirming it had no financials, risk score, alerts or risk history.
+
+Final integrity state:
+
+- Borrowers: 25
+- Unique borrower IDs: 25
+- Financial rows: 25
+- Risk scores: 25
+- Unique scored borrowers: 25
+- Risk-history rows: 25
+- Alerts: 46
+- Null classifications: 0
+- Duplicate borrower names: 0
+- Borrowers without risk scores: 0
+
+The API layer now preserves borrower_id throughout borrower-level responses and alert_id throughout alert-level responses.
+
+A new GET /borrowers/{borrower_id} endpoint provides live borrower detail, financial metrics, risk assessment and alerts.
+
+The React borrower drill-down now uses the real PostgreSQL borrower_id rather than list position.
+

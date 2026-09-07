@@ -6,7 +6,13 @@ function TopRiskAccounts() {
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/top_risk_accounts")
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to load top risk accounts");
+        }
+
+        return response.json();
+      })
       .then((data) => setAccounts(data))
       .catch((error) =>
         console.error("Error loading top risk accounts:", error)
@@ -27,11 +33,11 @@ function TopRiskAccounts() {
         </thead>
 
         <tbody>
-          {accounts.map((account, index) => (
-            <tr key={index}>
+          {accounts.map((account) => (
+            <tr key={account.borrower_id}>
               <td>
                 <Link
-                  to={`/borrower/${index + 1}`}
+                  to={`/borrower/${account.borrower_id}`}
                   className="borrower-link"
                 >
                   {account.borrower_name}

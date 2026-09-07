@@ -1,25 +1,71 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 
 function BorrowerPage() {
-  const borrower = {
-    borrower_name: "ABC Infra Ltd",
-    sector: "Infrastructure",
-    exposure: "₹48 Cr",
-    dpd: 45,
-    dscr: 0.8,
-    revenue_decline: "25%",
-    cash_flow: "Negative",
-    restructured: "Yes",
-    risk_score: 92,
-    classification: "High Risk",
-    alerts: [
-      "DPD > 30",
-      "DSCR < 1",
-      "Revenue Decline > 20%",
-      "Negative Cash Flow",
-      "Loan Restructured",
-    ],
-  };
+  const { id } = useParams();
+
+  const [borrower, setBorrower] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+
+    fetch(`http://127.0.0.1:8000/borrowers/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Borrower not found");
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        setBorrower(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error loading borrower:", error);
+        setError(error.message);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          padding: "30px",
+          color: "white",
+          backgroundColor: "#0f172a",
+          minHeight: "100vh",
+        }}
+      >
+        <h2>Loading borrower...</h2>
+      </div>
+    );
+  }
+
+  if (error || !borrower) {
+    return (
+      <div
+        style={{
+          padding: "30px",
+          color: "white",
+          backgroundColor: "#0f172a",
+          minHeight: "100vh",
+        }}
+      >
+        <h2>Unable to load borrower</h2>
+
+        <p>{error}</p>
+
+        <br />
+
+        <Link to="/">Return to Dashboard</Link>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -30,9 +76,27 @@ function BorrowerPage() {
         minHeight: "100vh",
       }}
     >
-      <h1 style={{ marginBottom: "25px" }}>Borrower Risk Profile</h1>
+      <Link
+        to="/"
+        style={{
+          color: "#60a5fa",
+          textDecoration: "none",
+        }}
+      >
+        ← Back to Dashboard
+      </Link>
+
+      <h1
+        style={{
+          marginTop: "20px",
+          marginBottom: "25px",
+        }}
+      >
+        Borrower Risk Profile
+      </h1>
 
       {/* Borrower Information */}
+
       <div
         style={{
           backgroundColor: "#1e293b",
@@ -42,19 +106,28 @@ function BorrowerPage() {
         }}
       >
         <h2>Borrower Information</h2>
+
         <br />
+
+        <p>
+          <strong>Borrower ID:</strong> {borrower.borrower_id}
+        </p>
+
         <p>
           <strong>Name:</strong> {borrower.borrower_name}
         </p>
+
         <p>
           <strong>Sector:</strong> {borrower.sector}
         </p>
+
         <p>
-          <strong>Total Exposure:</strong> {borrower.exposure}
+          <strong>Loan Amount:</strong> {borrower.loan_amount}
         </p>
       </div>
 
       {/* Financial Metrics */}
+
       <div
         style={{
           backgroundColor: "#1e293b",
@@ -64,25 +137,34 @@ function BorrowerPage() {
         }}
       >
         <h2>Financial Metrics</h2>
+
         <br />
+
         <p>
           <strong>DPD:</strong> {borrower.dpd}
         </p>
+
         <p>
           <strong>DSCR:</strong> {borrower.dscr}
         </p>
+
         <p>
-          <strong>Revenue Decline:</strong> {borrower.revenue_decline}
+          <strong>Revenue Decline:</strong>{" "}
+          {borrower.revenue_decline}%
         </p>
+
         <p>
           <strong>Cash Flow:</strong> {borrower.cash_flow}
         </p>
+
         <p>
-          <strong>Restructured:</strong> {borrower.restructured}
+          <strong>Restructured:</strong>{" "}
+          {borrower.restructured ? "Yes" : "No"}
         </p>
       </div>
 
       {/* Risk Assessment */}
+
       <div
         style={{
           backgroundColor: "#1e293b",
@@ -92,16 +174,17 @@ function BorrowerPage() {
         }}
       >
         <h2>Risk Assessment</h2>
+
         <br />
+
         <p>
-          <strong>Risk Score:</strong> {borrower.risk_score}
+          <strong>Risk Score:</strong> {borrower.score}
         </p>
 
         <p>
           <strong>Classification:</strong>{" "}
           <span
             style={{
-              color: "#ef4444",
               fontWeight: "bold",
             }}
           >
@@ -111,6 +194,7 @@ function BorrowerPage() {
       </div>
 
       {/* Active Alerts */}
+
       <div
         style={{
           backgroundColor: "#1e293b",
@@ -118,16 +202,30 @@ function BorrowerPage() {
           borderRadius: "10px",
         }}
       >
-        <h2>Triggered Alerts</h2>
+        <h2>Active Alerts</h2>
+
         <br />
 
-        <ul>
-          {borrower.alerts.map((alert, index) => (
-            <li key={index} style={{ marginBottom: "10px" }}>
-              {alert}
-            </li>
-          ))}
-        </ul>
+        {borrower.alerts.length === 0 ? (
+          <p>No active alerts.</p>
+        ) : (
+          <ul>
+            {borrower.alerts.map((alert) => (
+              <li
+                key={alert.alert_id}
+                style={{
+                  marginBottom: "15px",
+                }}
+              >
+                <strong>{alert.alert_type}</strong>
+
+                {" — "}
+
+                {alert.severity}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
