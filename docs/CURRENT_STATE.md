@@ -514,3 +514,92 @@ Falcon Realty borrower-level analysis currently produces:
 
 This is the first implementation of RiskVision's trajectory-based and cross-signal deterioration intelligence layer.
 
+
+## Current Condition + Trajectory Intelligence — 8 September 2026
+
+RiskVision's deterioration engine now combines current-condition severity with historical trajectory analysis.
+
+Current-condition severity was added using clearly labeled MVP/default development thresholds. These thresholds are not institutionally validated and are intended to be configurable later by lender, industry, geography and underwriting policy.
+
+Configured development metrics:
+
+- DSCR
+- BOUNCE_RATE
+- RECEIVABLE_DAYS
+- DEBT_EBITDA
+
+Each signal now returns:
+
+- current value
+- current condition
+- condition severity
+- previous value
+- latest absolute change
+- latest percentage change
+- deterioration direction
+- persistence
+- days since previous observation
+- risk velocity normalized to 30 days
+- previous normalized risk velocity
+- velocity change
+- acceleration/deceleration interpretation
+- number of historical observations
+
+Current-condition states:
+
+- HEALTHY = severity 0
+- WATCH = severity 1
+- WEAK = severity 2
+- CRITICAL = severity 3
+
+Falcon Realty Ltd currently demonstrates:
+
+Current condition:
+- Critical signals: 3
+- Weak signals: 1
+- Watch signals: 0
+- Healthy signals: 0
+
+Trajectory:
+- Deteriorating signals: 4
+- Persistent deterioration signals: 4
+- Accelerating deterioration signals: 3
+- Decelerating deterioration signals: 1
+- Cross-signal convergence: 100%
+
+Falcon metric examples:
+- DSCR: 0.90, CRITICAL, deteriorating, 6.55% risk velocity / 30d, accelerating
+- BOUNCE_RATE: 8.10, CRITICAL, deteriorating, 48.39% risk velocity / 30d, decelerating
+- RECEIVABLE_DAYS: 94, CRITICAL, deteriorating, 8.44% risk velocity / 30d, accelerating
+- DEBT_EBITDA: 3.40, WEAK, deteriorating, 5.75% risk velocity / 30d, accelerating
+
+The borrower deterioration API automatically exposes these fields through:
+
+GET /borrowers/{borrower_id}/deterioration
+
+The borrower profile UI now displays:
+
+- current condition counts
+- trajectory counts
+- cross-signal convergence
+- signal-level condition
+- latest percentage change
+- normalized risk velocity
+- deterioration direction
+- acceleration/deceleration
+- persistence
+
+Regression behavior was verified:
+
+- Falcon Realty Ltd (ID 65): full deterioration intelligence displayed
+- Orion Power Projects Ltd (ID 64): correctly displays insufficient historical data instead of interpreting missing history as healthy
+- nonexistent borrowers return HTTP 404
+
+RiskVision now has a PID-inspired analytical structure:
+
+- P-like: current-condition severity
+- I-like: persistence
+- D-like: time-normalized deterioration velocity
+- additional derivative proxy: change in velocity
+- additional layer: cross-signal convergence
+

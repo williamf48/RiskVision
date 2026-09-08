@@ -30,56 +30,40 @@ function BorrowerPage() {
         `http://127.0.0.1:8000/borrowers/${id}/deterioration`
       ),
     ])
-      .then(
-        async (
-          [
-            borrowerResponse,
-            deteriorationResponse,
-          ]
-        ) => {
+      .then(async ([borrowerResponse, deteriorationResponse]) => {
 
-          if (!borrowerResponse.ok) {
-            throw new Error(
-              "Borrower not found"
-            );
-          }
-
-          if (!deteriorationResponse.ok) {
-            throw new Error(
-              "Unable to load deterioration analysis"
-            );
-          }
-
-          const borrowerData =
-            await borrowerResponse.json();
-
-          const deteriorationData =
-            await deteriorationResponse.json();
-
-          return {
-            borrowerData,
-            deteriorationData,
-          };
+        if (!borrowerResponse.ok) {
+          throw new Error("Borrower not found");
         }
-      )
 
-      .then(
-        ({
+        if (!deteriorationResponse.ok) {
+          throw new Error(
+            "Unable to load deterioration analysis"
+          );
+        }
+
+        const borrowerData =
+          await borrowerResponse.json();
+
+        const deteriorationData =
+          await deteriorationResponse.json();
+
+        return {
           borrowerData,
           deteriorationData,
-        }) => {
+        };
+      })
 
-          setBorrower(
-            borrowerData
-          );
+      .then(({ borrowerData, deteriorationData }) => {
 
-          setDeterioration(
-            deteriorationData
-          );
+        setBorrower(borrowerData);
 
-          setLoading(false);
-        }
-      )
+        setDeterioration(
+          deteriorationData
+        );
+
+        setLoading(false);
+      })
 
       .catch((error) => {
 
@@ -88,9 +72,7 @@ function BorrowerPage() {
           error
         );
 
-        setError(
-          error.message
-        );
+        setError(error.message);
 
         setLoading(false);
       });
@@ -124,9 +106,7 @@ function BorrowerPage() {
           minHeight: "100vh",
         }}
       >
-        <h2>
-          Unable to load borrower
-        </h2>
+        <h2>Unable to load borrower</h2>
 
         <p>{error}</p>
 
@@ -182,16 +162,12 @@ function BorrowerPage() {
         }}
       >
 
-        <h2>
-          Borrower Information
-        </h2>
+        <h2>Borrower Information</h2>
 
         <br />
 
         <p>
-          <strong>
-            Borrower ID:
-          </strong>{" "}
+          <strong>Borrower ID:</strong>{" "}
           {borrower.borrower_id}
         </p>
 
@@ -206,9 +182,7 @@ function BorrowerPage() {
         </p>
 
         <p>
-          <strong>
-            Loan Amount:
-          </strong>{" "}
+          <strong>Loan Amount:</strong>{" "}
           {borrower.loan_amount}
         </p>
 
@@ -226,9 +200,7 @@ function BorrowerPage() {
         }}
       >
 
-        <h2>
-          Financial Metrics
-        </h2>
+        <h2>Financial Metrics</h2>
 
         <br />
 
@@ -243,23 +215,17 @@ function BorrowerPage() {
         </p>
 
         <p>
-          <strong>
-            Revenue Decline:
-          </strong>{" "}
+          <strong>Revenue Decline:</strong>{" "}
           {borrower.revenue_decline}%
         </p>
 
         <p>
-          <strong>
-            Cash Flow:
-          </strong>{" "}
+          <strong>Cash Flow:</strong>{" "}
           {borrower.cash_flow}
         </p>
 
         <p>
-          <strong>
-            Restructured:
-          </strong>{" "}
+          <strong>Restructured:</strong>{" "}
           {borrower.restructured
             ? "Yes"
             : "No"}
@@ -279,24 +245,17 @@ function BorrowerPage() {
         }}
       >
 
-        <h2>
-          Current Risk Assessment
-        </h2>
+        <h2>Current Risk Assessment</h2>
 
         <br />
 
         <p>
-          <strong>
-            Risk Score:
-          </strong>{" "}
+          <strong>Risk Score:</strong>{" "}
           {borrower.score}
         </p>
 
         <p>
-          <strong>
-            Classification:
-          </strong>{" "}
-
+          <strong>Classification:</strong>{" "}
           <span
             style={{
               fontWeight: "bold",
@@ -320,9 +279,7 @@ function BorrowerPage() {
         }}
       >
 
-        <h2>
-          Deterioration Intelligence
-        </h2>
+        <h2>Deterioration Intelligence</h2>
 
         <br />
 
@@ -337,27 +294,19 @@ function BorrowerPage() {
           <div>
 
             <p>
-              <strong>
-                Status:
-              </strong>{" "}
+              <strong>Status:</strong>{" "}
               Insufficient historical data
             </p>
 
             <p>
-              Historical signals available:
-              {" "}
-              0 /{" "}
-              {
-                deterioration
-                  .configured_metrics
-              }
+              Historical signals available: 0 /{" "}
+              {deterioration.configured_metrics}
             </p>
 
             <p>
-              RiskVision requires multiple
-              historical observations before
-              trajectory deterioration can
-              be assessed.
+              RiskVision requires multiple historical
+              observations before trajectory deterioration
+              can be assessed.
             </p>
 
           </div>
@@ -366,38 +315,56 @@ function BorrowerPage() {
 
           <div>
 
+            <h3>Current Condition</h3>
+
+            <br />
+
             <p>
-              <strong>
-                Signals Analyzed:
-              </strong>{" "}
-              {
-                deterioration
-                  .metrics_analyzed
-              }
+              <strong>Critical Signals:</strong>{" "}
+              {deterioration.critical_condition_signals}
+            </p>
+
+            <p>
+              <strong>Weak Signals:</strong>{" "}
+              {deterioration.weak_condition_signals}
+            </p>
+
+            <p>
+              <strong>Watch Signals:</strong>{" "}
+              {deterioration.watch_condition_signals}
+            </p>
+
+            <p>
+              <strong>Healthy Signals:</strong>{" "}
+              {deterioration.healthy_condition_signals}
             </p>
 
 
+            <br />
+
+            <h3>Trajectory</h3>
+
+            <br />
+
             <p>
-              <strong>
-                Deteriorating Signals:
-              </strong>{" "}
-              {
-                deterioration
-                  .deteriorating_signals
-              }
+              <strong>Signals Analyzed:</strong>{" "}
+              {deterioration.metrics_analyzed}
             </p>
 
+            <p>
+              <strong>Deteriorating Signals:</strong>{" "}
+              {deterioration.deteriorating_signals}
+            </p>
 
             <p>
               <strong>
-                Persistent Deterioration Signals:
+                Persistent Deterioration:
               </strong>{" "}
               {
                 deterioration
                   .persistent_deterioration_signals
               }
             </p>
-
 
             <p>
               <strong>
@@ -409,7 +376,6 @@ function BorrowerPage() {
               }
             </p>
 
-
             <p>
               <strong>
                 Decelerating Deterioration:
@@ -420,24 +386,17 @@ function BorrowerPage() {
               }
             </p>
 
-
             <p>
               <strong>
                 Cross-Signal Convergence:
               </strong>{" "}
-              {
-                deterioration
-                  .convergence_percentage
-              }
-              %
+              {deterioration.convergence_percentage}%
             </p>
 
 
             <br />
 
-            <h3>
-              Signal Analysis
-            </h3>
+            <h3>Signal Analysis</h3>
 
             <br />
 
@@ -459,66 +418,35 @@ function BorrowerPage() {
 
                   <tr>
 
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
+                    <th style={{ textAlign: "left", padding: "10px" }}>
                       Signal
                     </th>
 
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
+                    <th style={{ textAlign: "left", padding: "10px" }}>
                       Current
                     </th>
 
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
+                    <th style={{ textAlign: "left", padding: "10px" }}>
+                      Condition
+                    </th>
+
+                    <th style={{ textAlign: "left", padding: "10px" }}>
                       Latest Change
                     </th>
 
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
+                    <th style={{ textAlign: "left", padding: "10px" }}>
                       Velocity / 30d
                     </th>
 
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
+                    <th style={{ textAlign: "left", padding: "10px" }}>
                       Direction
                     </th>
 
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
+                    <th style={{ textAlign: "left", padding: "10px" }}>
                       Acceleration
                     </th>
 
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
+                    <th style={{ textAlign: "left", padding: "10px" }}>
                       Persistence
                     </th>
 
@@ -529,113 +457,91 @@ function BorrowerPage() {
 
                 <tbody>
 
-                  {
-                    deterioration
-                      .metric_results
-                      .map(
-                        (metric) => (
+                  {deterioration.metric_results.map(
+                    (metric) => (
 
-                          <tr
-                            key={
+                      <tr
+                        key={metric.metric_code}
+                      >
+
+                        <td style={{ padding: "10px" }}>
+                          {
+                            metricLabels[
                               metric.metric_code
-                            }
-                          >
-
-                            <td
-                              style={{
-                                padding: "10px",
-                              }}
-                            >
-                              {
-                                metricLabels[
-                                  metric.metric_code
-                                ]
-                                ||
-                                metric.metric_code
-                              }
-                            </td>
+                            ] || metric.metric_code
+                          }
+                        </td>
 
 
-                            <td
-                              style={{
-                                padding: "10px",
-                              }}
-                            >
-                              {
-                                metric.current_value
-                                ?? "—"
-                              }
-                            </td>
+                        <td style={{ padding: "10px" }}>
+                          {
+                            metric.current_value
+                            ?? "—"
+                          }
+                        </td>
 
 
-                            <td
-                              style={{
-                                padding: "10px",
-                              }}
-                            >
-                              {
-                                metric.percentage_change
-                                != null
-                                  ? `${metric.percentage_change}%`
-                                  : "—"
-                              }
-                            </td>
+                        <td
+                          style={{
+                            padding: "10px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {
+                            metric.condition
+                            ?? "—"
+                          }
+                        </td>
 
 
-                            <td
-                              style={{
-                                padding: "10px",
-                              }}
-                            >
-                              {
-                                metric.risk_velocity_30d
-                                != null
-                                  ? `${metric.risk_velocity_30d}%`
-                                  : "—"
-                              }
-                            </td>
+                        <td style={{ padding: "10px" }}>
+                          {
+                            metric.percentage_change != null
+                              ? `${metric.percentage_change}%`
+                              : "—"
+                          }
+                        </td>
 
 
-                            <td
-                              style={{
-                                padding: "10px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {
-                                metric.direction
-                              }
-                            </td>
+                        <td style={{ padding: "10px" }}>
+                          {
+                            metric.risk_velocity_30d != null
+                              ? `${metric.risk_velocity_30d}%`
+                              : "—"
+                          }
+                        </td>
 
 
-                            <td
-                              style={{
-                                padding: "10px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {
-                                metric
-                                  .acceleration_direction
-                              }
-                            </td>
+                        <td
+                          style={{
+                            padding: "10px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {metric.direction}
+                        </td>
 
 
-                            <td
-                              style={{
-                                padding: "10px",
-                              }}
-                            >
-                              {
-                                metric.persistence
-                              }
-                            </td>
+                        <td
+                          style={{
+                            padding: "10px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {
+                            metric.acceleration_direction
+                          }
+                        </td>
 
-                          </tr>
 
-                        )
-                      )
-                  }
+                        <td style={{ padding: "10px" }}>
+                          {metric.persistence}
+                        </td>
+
+                      </tr>
+
+                    )
+                  )}
 
                 </tbody>
 
@@ -660,61 +566,44 @@ function BorrowerPage() {
         }}
       >
 
-        <h2>
-          Active Alerts
-        </h2>
+        <h2>Active Alerts</h2>
 
         <br />
 
-        {
-          borrower.alerts.length === 0
-            ? (
+        {borrower.alerts.length === 0 ? (
 
-              <p>
-                No active alerts.
-              </p>
+          <p>No active alerts.</p>
 
-            )
-            : (
+        ) : (
 
-              <ul>
+          <ul>
 
-                {
-                  borrower.alerts.map(
-                    (alert) => (
+            {borrower.alerts.map(
+              (alert) => (
 
-                      <li
-                        key={
-                          alert.alert_id
-                        }
-                        style={{
-                          marginBottom:
-                            "15px",
-                        }}
-                      >
+                <li
+                  key={alert.alert_id}
+                  style={{
+                    marginBottom: "15px",
+                  }}
+                >
 
-                        <strong>
-                          {
-                            alert.alert_type
-                          }
-                        </strong>
+                  <strong>
+                    {alert.alert_type}
+                  </strong>
 
-                        {" — "}
+                  {" — "}
 
-                        {
-                          alert.severity
-                        }
+                  {alert.severity}
 
-                      </li>
+                </li>
 
-                    )
-                  )
-                }
+              )
+            )}
 
-              </ul>
+          </ul>
 
-            )
-        }
+        )}
 
       </div>
 
