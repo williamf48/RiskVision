@@ -1,7 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
+
 from connection import engine
+from trajectory_engine import analyze_borrower
+
 import pandas as pd
 
 
@@ -31,6 +34,7 @@ app.add_middleware(
 
 @app.get("/")
 def home():
+
     return {
         "message": "Risk Platform Running"
     }
@@ -49,9 +53,14 @@ def get_borrowers():
     ORDER BY id
     """
 
-    df = pd.read_sql(query, engine)
+    df = pd.read_sql(
+        query,
+        engine
+    )
 
-    return df.to_dict(orient="records")
+    return df.to_dict(
+        orient="records"
+    )
 
 
 # =========================================================
@@ -113,7 +122,9 @@ def get_borrower_detail(borrower_id: int):
 
         WHERE alerts.borrower_id = :borrower_id
 
-        ORDER BY alerts.created_at DESC, alerts.id DESC
+        ORDER BY
+            alerts.created_at DESC,
+            alerts.id DESC
     """)
 
     alerts_df = pd.read_sql(
@@ -124,13 +135,74 @@ def get_borrower_detail(borrower_id: int):
         }
     )
 
-    borrower = borrower_df.iloc[0].to_dict()
+    borrower = (
+        borrower_df
+        .iloc[0]
+        .to_dict()
+    )
 
-    borrower["alerts"] = alerts_df.to_dict(
-        orient="records"
+    borrower["alerts"] = (
+        alerts_df.to_dict(
+            orient="records"
+        )
     )
 
     return borrower
+
+
+# =========================================================
+# BORROWER DETERIORATION ANALYSIS
+# =========================================================
+
+@app.get("/borrowers/{borrower_id}/deterioration")
+def get_borrower_deterioration(
+    borrower_id: int
+):
+
+    # -----------------------------------------------------
+    # VERIFY BORROWER EXISTS
+    # -----------------------------------------------------
+
+    borrower_query = text("""
+        SELECT
+            id,
+            borrower_name
+        FROM borrowers
+        WHERE id = :borrower_id
+    """)
+
+    with engine.connect() as conn:
+
+        borrower = conn.execute(
+            borrower_query,
+            {
+                "borrower_id": borrower_id
+            }
+        ).mappings().one_or_none()
+
+    if borrower is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Borrower not found"
+        )
+
+    # -----------------------------------------------------
+    # RUN DETERIORATION ENGINE
+    # -----------------------------------------------------
+
+    result = analyze_borrower(
+        borrower_id=borrower_id
+    )
+
+    # -----------------------------------------------------
+    # ADD BORROWER INFORMATION
+    # -----------------------------------------------------
+
+    result["borrower_name"] = (
+        borrower["borrower_name"]
+    )
+
+    return result
 
 
 # =========================================================
@@ -155,9 +227,14 @@ def get_risk_scores():
     ORDER BY borrowers.id
     """
 
-    df = pd.read_sql(query, engine)
+    df = pd.read_sql(
+        query,
+        engine
+    )
 
-    return df.to_dict(orient="records")
+    return df.to_dict(
+        orient="records"
+    )
 
 
 # =========================================================
@@ -181,12 +258,19 @@ def get_alerts():
     JOIN borrowers
         ON borrowers.id = alerts.borrower_id
 
-    ORDER BY alerts.created_at DESC, alerts.id DESC
+    ORDER BY
+        alerts.created_at DESC,
+        alerts.id DESC
     """
 
-    df = pd.read_sql(query, engine)
+    df = pd.read_sql(
+        query,
+        engine
+    )
 
-    return df.to_dict(orient="records")
+    return df.to_dict(
+        orient="records"
+    )
 
 
 # =========================================================
@@ -202,7 +286,11 @@ def portfolio_summary():
     """
 
     total_exposure_query = """
-    SELECT COALESCE(SUM(loan_amount), 0) AS total_exposure
+    SELECT
+        COALESCE(
+            SUM(loan_amount),
+            0
+        ) AS total_exposure
     FROM borrowers
     """
 
@@ -273,25 +361,46 @@ def portfolio_summary():
     return {
 
         "total_borrowers":
-            int(total_borrowers.iloc[0]["total_borrowers"]),
+            int(
+                total_borrowers
+                .iloc[0]["total_borrowers"]
+            ),
 
         "total_exposure":
-            float(total_exposure.iloc[0]["total_exposure"]),
+            float(
+                total_exposure
+                .iloc[0]["total_exposure"]
+            ),
 
         "high_risk":
-            int(high_risk.iloc[0]["high_risk"]),
+            int(
+                high_risk
+                .iloc[0]["high_risk"]
+            ),
 
         "watchlist":
-            int(watchlist.iloc[0]["watchlist"]),
+            int(
+                watchlist
+                .iloc[0]["watchlist"]
+            ),
 
         "low_risk":
-            int(low_risk.iloc[0]["low_risk"]),
+            int(
+                low_risk
+                .iloc[0]["low_risk"]
+            ),
 
         "total_alerts":
-            int(total_alerts.iloc[0]["total_alerts"]),
+            int(
+                total_alerts
+                .iloc[0]["total_alerts"]
+            ),
 
         "high_severity_alerts":
-            int(high_alerts.iloc[0]["high_alerts"]),
+            int(
+                high_alerts
+                .iloc[0]["high_alerts"]
+            ),
     }
 
 
@@ -316,14 +425,22 @@ def watchlist():
 
     WHERE
         risk_scores.classification = 'Watchlist'
-        OR risk_scores.classification = 'High Risk'
+        OR
+        risk_scores.classification = 'High Risk'
 
-    ORDER BY risk_scores.score DESC, borrowers.id
+    ORDER BY
+        risk_scores.score DESC,
+        borrowers.id
     """
 
-    df = pd.read_sql(query, engine)
+    df = pd.read_sql(
+        query,
+        engine
+    )
 
-    return df.to_dict(orient="records")
+    return df.to_dict(
+        orient="records"
+    )
 
 
 # =========================================================
@@ -345,14 +462,21 @@ def top_risk_accounts():
     JOIN risk_scores
         ON borrowers.id = risk_scores.borrower_id
 
-    ORDER BY risk_scores.score DESC, borrowers.id
+    ORDER BY
+        risk_scores.score DESC,
+        borrowers.id
 
     LIMIT 10
     """
 
-    df = pd.read_sql(query, engine)
+    df = pd.read_sql(
+        query,
+        engine
+    )
 
-    return df.to_dict(orient="records")
+    return df.to_dict(
+        orient="records"
+    )
 
 
 # =========================================================
@@ -378,9 +502,16 @@ def high_alerts():
 
     WHERE alerts.severity = 'HIGH'
 
-    ORDER BY alerts.created_at DESC, alerts.id DESC
+    ORDER BY
+        alerts.created_at DESC,
+        alerts.id DESC
     """
 
-    df = pd.read_sql(query, engine)
+    df = pd.read_sql(
+        query,
+        engine
+    )
 
-    return df.to_dict(orient="records")
+    return df.to_dict(
+        orient="records"
+    )
