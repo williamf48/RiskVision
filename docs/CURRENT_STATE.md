@@ -446,3 +446,71 @@ A new GET /borrowers/{borrower_id} endpoint provides live borrower detail, finan
 
 The React borrower drill-down now uses the real PostgreSQL borrower_id rather than list position.
 
+
+## Historical Deterioration Intelligence Foundation — 8 September 2026
+
+RiskVision now has a dedicated historical metric-observation layer separate from the legacy borrower_financials snapshot table.
+
+Created:
+- borrower_metric_observations table
+- SQL migration for reproducible schema creation
+- synthetic history seed for Falcon Realty Ltd
+- generic trajectory_engine.py
+
+Historical observation fields include:
+- borrower_id
+- metric_code
+- metric_value
+- observation_date
+- period_start
+- period_end
+- reporting_frequency
+- source
+- data_quality
+- created_at
+
+The architecture supports different reporting frequencies, including monthly, quarterly and annual observations.
+
+Database protections include:
+- unique borrower/metric/date/source observations
+- reporting-period range validation
+- controlled reporting-frequency values
+- controlled data-quality values
+
+Falcon Realty Ltd was seeded with 16 synthetic observations across four signals:
+
+DSCR:
+1.45 -> 1.31 -> 1.12 -> 0.90
+
+BOUNCE_RATE:
+2.0 -> 3.2 -> 5.4 -> 8.1
+
+RECEIVABLE_DAYS:
+52 -> 61 -> 75 -> 94
+
+DEBT_EBITDA:
+2.2 -> 2.5 -> 2.9 -> 3.4
+
+The seed is idempotent: rerunning it leaves the observation count at 16.
+
+The trajectory engine now:
+- loads historical observations from PostgreSQL
+- understands whether UP or DOWN represents deterioration for each configured metric
+- calculates current value
+- previous value
+- absolute change
+- percentage change
+- direction
+- persistence
+
+Falcon Realty borrower-level analysis currently produces:
+
+- Metrics analyzed: 4
+- Deteriorating signals: 4
+- Improving signals: 0
+- Stable signals: 0
+- Persistent deterioration signals: 4
+- Cross-signal convergence: 100%
+
+This is the first implementation of RiskVision's trajectory-based and cross-signal deterioration intelligence layer.
+
