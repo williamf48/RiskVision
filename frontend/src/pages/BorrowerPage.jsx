@@ -57,10 +57,7 @@ function BorrowerPage() {
       .then(({ borrowerData, deteriorationData }) => {
 
         setBorrower(borrowerData);
-
-        setDeterioration(
-          deteriorationData
-        );
+        setDeterioration(deteriorationData);
 
         setLoading(false);
       })
@@ -73,7 +70,6 @@ function BorrowerPage() {
         );
 
         setError(error.message);
-
         setLoading(false);
       });
 
@@ -151,7 +147,9 @@ function BorrowerPage() {
       </h1>
 
 
+      {/* ================================================= */}
       {/* BORROWER INFORMATION */}
+      {/* ================================================= */}
 
       <div
         style={{
@@ -189,7 +187,9 @@ function BorrowerPage() {
       </div>
 
 
+      {/* ================================================= */}
       {/* FINANCIAL METRICS */}
+      {/* ================================================= */}
 
       <div
         style={{
@@ -234,7 +234,9 @@ function BorrowerPage() {
       </div>
 
 
+      {/* ================================================= */}
       {/* CURRENT RISK */}
+      {/* ================================================= */}
 
       <div
         style={{
@@ -268,7 +270,9 @@ function BorrowerPage() {
       </div>
 
 
+      {/* ================================================= */}
       {/* DETERIORATION INTELLIGENCE */}
+      {/* ================================================= */}
 
       <div
         style={{
@@ -315,32 +319,158 @@ function BorrowerPage() {
 
           <div>
 
+            {/* =========================================== */}
+            {/* INTERVENTION PRIORITY */}
+            {/* =========================================== */}
+
+            <h3>Intervention Priority</h3>
+
+            <br />
+
+            <p
+              style={{
+                fontSize: "24px",
+                fontWeight: "bold",
+              }}
+            >
+              {deterioration.intervention_priority}
+            </p>
+
+            <p>
+              <strong>Priority Rank:</strong>{" "}
+              {deterioration.priority_rank}
+            </p>
+
+
+            <br />
+
+            {/* =========================================== */}
+            {/* WHY FLAGGED */}
+            {/* =========================================== */}
+
+            <h3>Why Flagged?</h3>
+
+            <br />
+
+            <ul>
+
+              {deterioration.explanations.map(
+                (explanation, index) => (
+
+                  <li
+                    key={`explanation-${index}`}
+                    style={{
+                      marginBottom: "10px",
+                    }}
+                  >
+                    {explanation}
+                  </li>
+
+                )
+              )}
+
+            </ul>
+
+
+            <br />
+
+            {/* =========================================== */}
+            {/* RECOMMENDED INVESTIGATION */}
+            {/* =========================================== */}
+
+            <h3>Recommended Investigation</h3>
+
+            <br />
+
+            {
+              deterioration
+                .recommended_investigations
+                .length === 0
+                ? (
+
+                  <p>
+                    No specific investigation
+                    recommendations generated.
+                  </p>
+
+                )
+                : (
+
+                  <ul>
+
+                    {
+                      deterioration
+                        .recommended_investigations
+                        .map(
+                          (recommendation, index) => (
+
+                            <li
+                              key={`recommendation-${index}`}
+                              style={{
+                                marginBottom: "10px",
+                              }}
+                            >
+                              {recommendation}
+                            </li>
+
+                          )
+                        )
+                    }
+
+                  </ul>
+
+                )
+            }
+
+
+            <br />
+
+            {/* =========================================== */}
+            {/* CURRENT CONDITION */}
+            {/* =========================================== */}
+
             <h3>Current Condition</h3>
 
             <br />
 
             <p>
               <strong>Critical Signals:</strong>{" "}
-              {deterioration.critical_condition_signals}
+              {
+                deterioration
+                  .critical_condition_signals
+              }
             </p>
 
             <p>
               <strong>Weak Signals:</strong>{" "}
-              {deterioration.weak_condition_signals}
+              {
+                deterioration
+                  .weak_condition_signals
+              }
             </p>
 
             <p>
               <strong>Watch Signals:</strong>{" "}
-              {deterioration.watch_condition_signals}
+              {
+                deterioration
+                  .watch_condition_signals
+              }
             </p>
 
             <p>
               <strong>Healthy Signals:</strong>{" "}
-              {deterioration.healthy_condition_signals}
+              {
+                deterioration
+                  .healthy_condition_signals
+              }
             </p>
 
 
             <br />
+
+            {/* =========================================== */}
+            {/* TRAJECTORY */}
+            {/* =========================================== */}
 
             <h3>Trajectory</h3>
 
@@ -353,7 +483,10 @@ function BorrowerPage() {
 
             <p>
               <strong>Deteriorating Signals:</strong>{" "}
-              {deterioration.deteriorating_signals}
+              {
+                deterioration
+                  .deteriorating_signals
+              }
             </p>
 
             <p>
@@ -390,11 +523,19 @@ function BorrowerPage() {
               <strong>
                 Cross-Signal Convergence:
               </strong>{" "}
-              {deterioration.convergence_percentage}%
+              {
+                deterioration
+                  .convergence_percentage
+              }
+              %
             </p>
 
 
             <br />
+
+            {/* =========================================== */}
+            {/* SIGNAL ANALYSIS */}
+            {/* =========================================== */}
 
             <h3>Signal Analysis</h3>
 
@@ -418,35 +559,75 @@ function BorrowerPage() {
 
                   <tr>
 
-                    <th style={{ textAlign: "left", padding: "10px" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "10px",
+                      }}
+                    >
                       Signal
                     </th>
 
-                    <th style={{ textAlign: "left", padding: "10px" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "10px",
+                      }}
+                    >
                       Current
                     </th>
 
-                    <th style={{ textAlign: "left", padding: "10px" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "10px",
+                      }}
+                    >
                       Condition
                     </th>
 
-                    <th style={{ textAlign: "left", padding: "10px" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "10px",
+                      }}
+                    >
                       Latest Change
                     </th>
 
-                    <th style={{ textAlign: "left", padding: "10px" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "10px",
+                      }}
+                    >
                       Velocity / 30d
                     </th>
 
-                    <th style={{ textAlign: "left", padding: "10px" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "10px",
+                      }}
+                    >
                       Direction
                     </th>
 
-                    <th style={{ textAlign: "left", padding: "10px" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "10px",
+                      }}
+                    >
                       Acceleration
                     </th>
 
-                    <th style={{ textAlign: "left", padding: "10px" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "10px",
+                      }}
+                    >
                       Persistence
                     </th>
 
@@ -457,91 +638,124 @@ function BorrowerPage() {
 
                 <tbody>
 
-                  {deterioration.metric_results.map(
-                    (metric) => (
+                  {
+                    deterioration
+                      .metric_results
+                      .map(
+                        (metric) => (
 
-                      <tr
-                        key={metric.metric_code}
-                      >
-
-                        <td style={{ padding: "10px" }}>
-                          {
-                            metricLabels[
+                          <tr
+                            key={
                               metric.metric_code
-                            ] || metric.metric_code
-                          }
-                        </td>
+                            }
+                          >
+
+                            <td
+                              style={{
+                                padding: "10px",
+                              }}
+                            >
+                              {
+                                metricLabels[
+                                  metric.metric_code
+                                ]
+                                ||
+                                metric.metric_code
+                              }
+                            </td>
 
 
-                        <td style={{ padding: "10px" }}>
-                          {
-                            metric.current_value
-                            ?? "—"
-                          }
-                        </td>
+                            <td
+                              style={{
+                                padding: "10px",
+                              }}
+                            >
+                              {
+                                metric.current_value
+                                ?? "—"
+                              }
+                            </td>
 
 
-                        <td
-                          style={{
-                            padding: "10px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {
-                            metric.condition
-                            ?? "—"
-                          }
-                        </td>
+                            <td
+                              style={{
+                                padding: "10px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {
+                                metric.condition
+                                ?? "—"
+                              }
+                            </td>
 
 
-                        <td style={{ padding: "10px" }}>
-                          {
-                            metric.percentage_change != null
-                              ? `${metric.percentage_change}%`
-                              : "—"
-                          }
-                        </td>
+                            <td
+                              style={{
+                                padding: "10px",
+                              }}
+                            >
+                              {
+                                metric
+                                  .percentage_change
+                                != null
+                                  ? `${metric.percentage_change}%`
+                                  : "—"
+                              }
+                            </td>
 
 
-                        <td style={{ padding: "10px" }}>
-                          {
-                            metric.risk_velocity_30d != null
-                              ? `${metric.risk_velocity_30d}%`
-                              : "—"
-                          }
-                        </td>
+                            <td
+                              style={{
+                                padding: "10px",
+                              }}
+                            >
+                              {
+                                metric
+                                  .risk_velocity_30d
+                                != null
+                                  ? `${metric.risk_velocity_30d}%`
+                                  : "—"
+                              }
+                            </td>
 
 
-                        <td
-                          style={{
-                            padding: "10px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {metric.direction}
-                        </td>
+                            <td
+                              style={{
+                                padding: "10px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {metric.direction}
+                            </td>
 
 
-                        <td
-                          style={{
-                            padding: "10px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {
-                            metric.acceleration_direction
-                          }
-                        </td>
+                            <td
+                              style={{
+                                padding: "10px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {
+                                metric
+                                  .acceleration_direction
+                              }
+                            </td>
 
 
-                        <td style={{ padding: "10px" }}>
-                          {metric.persistence}
-                        </td>
+                            <td
+                              style={{
+                                padding: "10px",
+                              }}
+                            >
+                              {metric.persistence}
+                            </td>
 
-                      </tr>
+                          </tr>
 
-                    )
-                  )}
+                        )
+                      )
+                  }
 
                 </tbody>
 
@@ -556,7 +770,9 @@ function BorrowerPage() {
       </div>
 
 
+      {/* ================================================= */}
       {/* ACTIVE ALERTS */}
+      {/* ================================================= */}
 
       <div
         style={{
@@ -570,40 +786,54 @@ function BorrowerPage() {
 
         <br />
 
-        {borrower.alerts.length === 0 ? (
+        {
+          borrower.alerts.length === 0
+            ? (
 
-          <p>No active alerts.</p>
+              <p>
+                No active alerts.
+              </p>
 
-        ) : (
+            )
+            : (
 
-          <ul>
+              <ul>
 
-            {borrower.alerts.map(
-              (alert) => (
+                {
+                  borrower.alerts.map(
+                    (alert) => (
 
-                <li
-                  key={alert.alert_id}
-                  style={{
-                    marginBottom: "15px",
-                  }}
-                >
+                      <li
+                        key={
+                          alert.alert_id
+                        }
+                        style={{
+                          marginBottom: "15px",
+                        }}
+                      >
 
-                  <strong>
-                    {alert.alert_type}
-                  </strong>
+                        <strong>
+                          {
+                            alert.alert_type
+                          }
+                        </strong>
 
-                  {" — "}
+                        {" — "}
 
-                  {alert.severity}
+                        {
+                          alert.severity
+                        }
 
-                </li>
+                      </li>
 
-              )
-            )}
+                    )
+                  )
+                }
 
-          </ul>
+              </ul>
 
-        )}
+            )
+        }
 
       </div>
 
