@@ -136,7 +136,9 @@ def classify_condition(
         }
 
 
-    value = float(current_value)
+    value = float(
+        current_value
+    )
 
 
     # -----------------------------------------------------
@@ -151,15 +153,18 @@ def classify_condition(
             condition = "CRITICAL"
             severity = 3
 
+
         elif value < thresholds["weak"]:
 
             condition = "WEAK"
             severity = 2
 
+
         elif value < thresholds["watch"]:
 
             condition = "WATCH"
             severity = 1
+
 
         else:
 
@@ -178,15 +183,18 @@ def classify_condition(
             condition = "CRITICAL"
             severity = 3
 
+
         elif value > thresholds["weak"]:
 
             condition = "WEAK"
             severity = 2
 
+
         elif value > thresholds["watch"]:
 
             condition = "WATCH"
             severity = 1
+
 
         else:
 
@@ -215,15 +223,27 @@ def calculate_risk_velocity(
     Calculate percentage deterioration normalized
     to a 30-day period.
 
-    Positive velocity = deterioration
-    Negative velocity = improvement
+    Positive velocity = deterioration.
+    Negative velocity = improvement.
     """
 
-    old_value = float(old_value)
-    new_value = float(new_value)
+    old_value = float(
+        old_value
+    )
 
-    old_date = pd.Timestamp(old_date)
-    new_date = pd.Timestamp(new_date)
+    new_value = float(
+        new_value
+    )
+
+
+    old_date = pd.Timestamp(
+        old_date
+    )
+
+    new_date = pd.Timestamp(
+        new_date
+    )
+
 
     days = (
         new_date
@@ -254,7 +274,9 @@ def calculate_risk_velocity(
             - old_value
         )
 
-        / abs(old_value)
+        / abs(
+            old_value
+        )
 
     ) * 100
 
@@ -268,6 +290,7 @@ def calculate_risk_velocity(
         risk_percentage_change = (
             raw_percentage_change
         )
+
 
     else:
 
@@ -328,7 +351,8 @@ def analyze_trajectory(
 
             "risk_velocity_30d": None,
 
-            "previous_risk_velocity_30d": None,
+            "previous_risk_velocity_30d":
+                None,
 
             "velocity_change_30d": None,
 
@@ -339,8 +363,9 @@ def analyze_trajectory(
 
     # -----------------------------------------------------
     # ONE OBSERVATION
+    #
     # Current condition can be assessed,
-    # trajectory cannot.
+    # trajectory cannot yet be calculated.
     # -----------------------------------------------------
 
     if len(values) == 1:
@@ -368,7 +393,8 @@ def analyze_trajectory(
 
             "risk_velocity_30d": None,
 
-            "previous_risk_velocity_30d": None,
+            "previous_risk_velocity_30d":
+                None,
 
             "velocity_change_30d": None,
 
@@ -394,7 +420,6 @@ def analyze_trajectory(
 
         current_value
         - previous_value
-
     )
 
 
@@ -413,6 +438,7 @@ def analyze_trajectory(
             )
 
         ) * 100
+
 
     else:
 
@@ -788,6 +814,10 @@ def analyze_metric(
     )
 
 
+    # =====================================================
+    # CURRENT CONDITION
+    # =====================================================
+
     condition_result = (
         classify_condition(
 
@@ -809,6 +839,10 @@ def analyze_metric(
         condition_result
     )
 
+
+    # =====================================================
+    # METADATA
+    # =====================================================
 
     result[
         "borrower_id"
@@ -843,8 +877,8 @@ def build_recommended_investigations(
     """
     Generate analyst investigation suggestions.
 
-    These are decision-support prompts, not
-    automated lending decisions.
+    These are decision-support prompts,
+    not automated lending decisions.
     """
 
     recommendations = []
@@ -867,40 +901,28 @@ def build_recommended_investigations(
         )
 
 
-        if (
-            metric_code
-            == "DSCR"
-        ):
+        if metric_code == "DSCR":
 
             recommendations.append(
                 "Review debt-service capacity, operating cash flow and upcoming repayment obligations."
             )
 
 
-        elif (
-            metric_code
-            == "BOUNCE_RATE"
-        ):
+        elif metric_code == "BOUNCE_RATE":
 
             recommendations.append(
                 "Investigate recent repayment behaviour, payment bounces and transaction-level irregularities."
             )
 
 
-        elif (
-            metric_code
-            == "RECEIVABLE_DAYS"
-        ):
+        elif metric_code == "RECEIVABLE_DAYS":
 
             recommendations.append(
                 "Review receivable ageing, collection delays and customer concentration."
             )
 
 
-        elif (
-            metric_code
-            == "DEBT_EBITDA"
-        ):
+        elif metric_code == "DEBT_EBITDA":
 
             recommendations.append(
                 "Reassess leverage, recent debt additions and EBITDA sustainability."
@@ -930,8 +952,10 @@ def build_intervention_priority(
     Build an explainable borrower-level intervention
     priority using transparent MVP heuristic rules.
 
-    This is NOT a validated institutional credit-policy
-    framework and is NOT a probability of default.
+    This is NOT:
+    - a probability of default
+    - an automated credit decision
+    - validated institutional credit policy
     """
 
     metrics_analyzed = (
@@ -1014,7 +1038,8 @@ def build_intervention_priority(
                 "RiskVision does not yet have enough historical observations to assess borrower deterioration."
             ],
 
-            "recommended_investigations": [],
+            "recommended_investigations":
+                [],
         }
 
 
@@ -1050,6 +1075,7 @@ def build_intervention_priority(
             critical
             + weak
         )
+
         >= 2
     )
 
@@ -1061,7 +1087,7 @@ def build_intervention_priority(
 
 
     # =====================================================
-    # INTERVENTION PRIORITY
+    # PRIORITY
     # =====================================================
 
     if (
@@ -1231,7 +1257,7 @@ def build_intervention_priority(
 
 
     # =====================================================
-    # INVESTIGATION RECOMMENDATIONS
+    # RECOMMENDED INVESTIGATIONS
     # =====================================================
 
     recommended_investigations = (
@@ -1333,10 +1359,7 @@ def analyze_borrower(
         # TRAJECTORY COUNTS
         # -------------------------------------------------
 
-        if (
-            direction
-            == "DETERIORATING"
-        ):
+        if direction == "DETERIORATING":
 
             deteriorating_signals += 1
 
@@ -1361,18 +1384,12 @@ def analyze_borrower(
                 decelerating_deterioration_signals += 1
 
 
-        elif (
-            direction
-            == "IMPROVING"
-        ):
+        elif direction == "IMPROVING":
 
             improving_signals += 1
 
 
-        elif (
-            direction
-            == "STABLE"
-        ):
+        elif direction == "STABLE":
 
             stable_signals += 1
 
@@ -1386,37 +1403,25 @@ def analyze_borrower(
 
 
         # -------------------------------------------------
-        # CURRENT-CONDITION COUNTS
+        # CONDITION COUNTS
         # -------------------------------------------------
 
-        if (
-            condition
-            == "CRITICAL"
-        ):
+        if condition == "CRITICAL":
 
             critical_condition_signals += 1
 
 
-        elif (
-            condition
-            == "WEAK"
-        ):
+        elif condition == "WEAK":
 
             weak_condition_signals += 1
 
 
-        elif (
-            condition
-            == "WATCH"
-        ):
+        elif condition == "WATCH":
 
             watch_condition_signals += 1
 
 
-        elif (
-            condition
-            == "HEALTHY"
-        ):
+        elif condition == "HEALTHY":
 
             healthy_condition_signals += 1
 
@@ -1439,10 +1444,7 @@ def analyze_borrower(
     # CROSS-SIGNAL CONVERGENCE
     # =====================================================
 
-    if (
-        metrics_analyzed
-        > 0
-    ):
+    if metrics_analyzed > 0:
 
         convergence_ratio = (
 
@@ -1450,6 +1452,7 @@ def analyze_borrower(
 
             / metrics_analyzed
         )
+
 
     else:
 
@@ -1460,7 +1463,6 @@ def analyze_borrower(
 
         convergence_ratio
         * 100
-
     )
 
 
@@ -1583,140 +1585,267 @@ def analyze_borrower(
 
 
 # =========================================================
+# ANALYZE ENTIRE PORTFOLIO
+# =========================================================
+
+def analyze_portfolio():
+    """
+    Analyze every borrower and return a ranked
+    intervention-priority watchlist.
+
+    MVP implementation:
+    each borrower is analyzed individually.
+
+    Later this should be optimized using batch queries
+    rather than repeated per-borrower database queries.
+    """
+
+    borrower_query = """
+    SELECT
+        id,
+        borrower_name
+    FROM borrowers
+    ORDER BY id
+    """
+
+
+    borrowers_df = pd.read_sql(
+        borrower_query,
+        engine,
+    )
+
+
+    portfolio_results = []
+
+
+    # =====================================================
+    # ANALYZE EACH BORROWER
+    # =====================================================
+
+    for borrower in (
+        borrowers_df.itertuples()
+    ):
+
+        borrower_id = int(
+            borrower.id
+        )
+
+
+        result = analyze_borrower(
+            borrower_id
+        )
+
+
+        portfolio_results.append({
+
+            "borrower_id":
+                borrower_id,
+
+            "borrower_name":
+                borrower.borrower_name,
+
+
+            "intervention_priority":
+                result[
+                    "intervention_priority"
+                ],
+
+            "priority_rank":
+                result[
+                    "priority_rank"
+                ],
+
+
+            "critical_condition_signals":
+                result[
+                    "critical_condition_signals"
+                ],
+
+            "weak_condition_signals":
+                result[
+                    "weak_condition_signals"
+                ],
+
+            "watch_condition_signals":
+                result[
+                    "watch_condition_signals"
+                ],
+
+
+            "deteriorating_signals":
+                result[
+                    "deteriorating_signals"
+                ],
+
+            "metrics_analyzed":
+                result[
+                    "metrics_analyzed"
+                ],
+
+
+            "persistent_deterioration_signals":
+                result[
+                    "persistent_deterioration_signals"
+                ],
+
+            "accelerating_deterioration_signals":
+                result[
+                    "accelerating_deterioration_signals"
+                ],
+
+            "decelerating_deterioration_signals":
+                result[
+                    "decelerating_deterioration_signals"
+                ],
+
+
+            "convergence_percentage":
+                result[
+                    "convergence_percentage"
+                ],
+
+
+            "reason_codes":
+                result[
+                    "reason_codes"
+                ],
+
+            "explanations":
+                result[
+                    "explanations"
+                ],
+
+            "recommended_investigations":
+                result[
+                    "recommended_investigations"
+                ],
+        })
+
+
+    # =====================================================
+    # PORTFOLIO RANKING
+    # =====================================================
+    #
+    # Sort order:
+    #
+    # 1. intervention priority
+    # 2. critical-condition signals
+    # 3. cross-signal convergence
+    # 4. accelerating deterioration
+    # 5. persistent deterioration
+    #
+    # =====================================================
+
+    portfolio_results.sort(
+
+        key=lambda borrower: (
+
+            borrower[
+                "priority_rank"
+            ],
+
+            borrower[
+                "critical_condition_signals"
+            ],
+
+            borrower[
+                "convergence_percentage"
+            ],
+
+            borrower[
+                "accelerating_deterioration_signals"
+            ],
+
+            borrower[
+                "persistent_deterioration_signals"
+            ],
+        ),
+
+        reverse=True,
+    )
+
+
+    # =====================================================
+    # ADD PORTFOLIO RANK
+    # =====================================================
+
+    for (
+        index,
+        borrower,
+    ) in enumerate(
+        portfolio_results,
+        start=1,
+    ):
+
+        borrower[
+            "portfolio_rank"
+        ] = index
+
+
+    return portfolio_results
+
+
+# =========================================================
 # TEST
 # =========================================================
 
 if __name__ == "__main__":
 
-    result = analyze_borrower(
-        borrower_id=65
+    portfolio = (
+        analyze_portfolio()
     )
 
 
     print(
-        "=========================================="
+        "=============================================================="
     )
 
     print(
-        "FALCON REALTY - INTERVENTION ANALYSIS"
+        "RISKVISION - PORTFOLIO INTERVENTION WATCHLIST"
     )
 
     print(
-        "=========================================="
+        "=============================================================="
     )
-
 
     print()
 
+
     print(
-        "INTERVENTION PRIORITY:",
-        result[
-            "intervention_priority"
-        ]
+        f"{'Rank':<6}"
+        f"{'Borrower':<32}"
+        f"{'Priority':<20}"
+        f"{'Critical':<10}"
+        f"{'Deteriorating':<16}"
+        f"{'Persistent':<12}"
+        f"{'Accelerating':<14}"
+        f"{'Convergence'}"
     )
 
 
     print(
-        "PRIORITY RANK:",
-        result[
-            "priority_rank"
-        ]
+        "-" * 120
     )
 
 
-    print()
-
-    print(
-        "CURRENT CONDITION"
-    )
-
-
-    print(
-        "Critical:",
-        result[
-            "critical_condition_signals"
-        ]
-    )
-
-
-    print(
-        "Weak:",
-        result[
-            "weak_condition_signals"
-        ]
-    )
-
-
-    print()
-
-    print(
-        "TRAJECTORY"
-    )
-
-
-    print(
-        "Deteriorating:",
-        result[
-            "deteriorating_signals"
-        ]
-    )
-
-
-    print(
-        "Persistent:",
-        result[
-            "persistent_deterioration_signals"
-        ]
-    )
-
-
-    print(
-        "Accelerating:",
-        result[
-            "accelerating_deterioration_signals"
-        ]
-    )
-
-
-    print(
-        "Convergence:",
-        f'{result["convergence_percentage"]}%'
-    )
-
-
-    print()
-
-    print(
-        "WHY FLAGGED"
-    )
-
-
-    for explanation in (
-        result[
-            "explanations"
-        ]
-    ):
+    for borrower in portfolio:
 
         print(
-            "-",
-            explanation
-        )
 
+            f"{borrower['portfolio_rank']:<6}"
 
-    print()
+            f"{borrower['borrower_name']:<32}"
 
-    print(
-        "RECOMMENDED INVESTIGATION"
-    )
+            f"{borrower['intervention_priority']:<20}"
 
+            f"{borrower['critical_condition_signals']:<10}"
 
-    for recommendation in (
-        result[
-            "recommended_investigations"
-        ]
-    ):
+            f"{borrower['deteriorating_signals']}/"
+            f"{borrower['metrics_analyzed']:<14}"
 
-        print(
-            "-",
-            recommendation
+            f"{borrower['persistent_deterioration_signals']:<12}"
+
+            f"{borrower['accelerating_deterioration_signals']:<14}"
+
+            f"{borrower['convergence_percentage']}%"
         )

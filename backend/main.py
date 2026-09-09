@@ -3,7 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from connection import engine
-from trajectory_engine import analyze_borrower
+from trajectory_engine import (
+    analyze_borrower,
+    analyze_portfolio,
+)
 
 import pandas as pd
 
@@ -29,7 +32,7 @@ app.add_middleware(
 
 
 # =========================================================
-# HOME ROUTE
+# HOME
 # =========================================================
 
 @app.get("/")
@@ -55,7 +58,7 @@ def get_borrowers():
 
     df = pd.read_sql(
         query,
-        engine
+        engine,
     )
 
     return df.to_dict(
@@ -68,7 +71,9 @@ def get_borrowers():
 # =========================================================
 
 @app.get("/borrowers/{borrower_id}")
-def get_borrower_detail(borrower_id: int):
+def get_borrower_detail(
+    borrower_id: int,
+):
 
     borrower_query = text("""
         SELECT
@@ -101,15 +106,19 @@ def get_borrower_detail(borrower_id: int):
         borrower_query,
         engine,
         params={
-            "borrower_id": borrower_id
-        }
+            "borrower_id":
+                borrower_id
+        },
     )
 
+
     if borrower_df.empty:
+
         raise HTTPException(
             status_code=404,
-            detail="Borrower not found"
+            detail="Borrower not found",
         )
+
 
     alert_query = text("""
         SELECT
@@ -127,13 +136,16 @@ def get_borrower_detail(borrower_id: int):
             alerts.id DESC
     """)
 
+
     alerts_df = pd.read_sql(
         alert_query,
         engine,
         params={
-            "borrower_id": borrower_id
-        }
+            "borrower_id":
+                borrower_id
+        },
     )
+
 
     borrower = (
         borrower_df
@@ -141,22 +153,24 @@ def get_borrower_detail(borrower_id: int):
         .to_dict()
     )
 
+
     borrower["alerts"] = (
         alerts_df.to_dict(
             orient="records"
         )
     )
 
+
     return borrower
 
 
 # =========================================================
-# BORROWER DETERIORATION ANALYSIS
+# BORROWER DETERIORATION INTELLIGENCE
 # =========================================================
 
 @app.get("/borrowers/{borrower_id}/deterioration")
 def get_borrower_deterioration(
-    borrower_id: int
+    borrower_id: int,
 ):
 
     # -----------------------------------------------------
@@ -167,42 +181,76 @@ def get_borrower_deterioration(
         SELECT
             id,
             borrower_name
+
         FROM borrowers
+
         WHERE id = :borrower_id
     """)
+
 
     with engine.connect() as conn:
 
         borrower = conn.execute(
             borrower_query,
             {
-                "borrower_id": borrower_id
-            }
+                "borrower_id":
+                    borrower_id
+            },
         ).mappings().one_or_none()
 
+
     if borrower is None:
+
         raise HTTPException(
             status_code=404,
-            detail="Borrower not found"
+            detail="Borrower not found",
         )
+
 
     # -----------------------------------------------------
     # RUN DETERIORATION ENGINE
     # -----------------------------------------------------
 
     result = analyze_borrower(
-        borrower_id=borrower_id
+        borrower_id=
+            borrower_id
     )
 
+
     # -----------------------------------------------------
-    # ADD BORROWER INFORMATION
+    # ADD BORROWER NAME
     # -----------------------------------------------------
 
     result["borrower_name"] = (
-        borrower["borrower_name"]
+        borrower[
+            "borrower_name"
+        ]
     )
 
+
     return result
+
+
+# =========================================================
+# INTERVENTION WATCHLIST
+# =========================================================
+
+@app.get("/intervention_watchlist")
+def intervention_watchlist():
+    """
+    Return the entire portfolio ranked by
+    explainable borrower intervention priority.
+
+    Priority order:
+
+    URGENT
+    HIGH
+    MEDIUM
+    LOW
+    INSUFFICIENT_DATA
+    """
+
+    return analyze_portfolio()
 
 
 # =========================================================
@@ -227,10 +275,12 @@ def get_risk_scores():
     ORDER BY borrowers.id
     """
 
+
     df = pd.read_sql(
         query,
-        engine
+        engine,
     )
+
 
     return df.to_dict(
         orient="records"
@@ -263,10 +313,12 @@ def get_alerts():
         alerts.id DESC
     """
 
+
     df = pd.read_sql(
         query,
-        engine
+        engine,
     )
+
 
     return df.to_dict(
         orient="records"
@@ -281,9 +333,11 @@ def get_alerts():
 def portfolio_summary():
 
     total_borrowers_query = """
-    SELECT COUNT(*) AS total_borrowers
+    SELECT
+        COUNT(*) AS total_borrowers
     FROM borrowers
     """
+
 
     total_exposure_query = """
     SELECT
@@ -291,121 +345,169 @@ def portfolio_summary():
             SUM(loan_amount),
             0
         ) AS total_exposure
+
     FROM borrowers
     """
 
+
     high_risk_query = """
-    SELECT COUNT(*) AS high_risk
+    SELECT
+        COUNT(*) AS high_risk
+
     FROM risk_scores
+
     WHERE classification = 'High Risk'
     """
 
+
     watchlist_query = """
-    SELECT COUNT(*) AS watchlist
+    SELECT
+        COUNT(*) AS watchlist
+
     FROM risk_scores
+
     WHERE classification = 'Watchlist'
     """
 
+
     low_risk_query = """
-    SELECT COUNT(*) AS low_risk
+    SELECT
+        COUNT(*) AS low_risk
+
     FROM risk_scores
+
     WHERE classification = 'Low Risk'
     """
 
+
     alerts_query = """
-    SELECT COUNT(*) AS total_alerts
+    SELECT
+        COUNT(*) AS total_alerts
+
     FROM alerts
     """
 
+
     high_alerts_query = """
-    SELECT COUNT(*) AS high_alerts
+    SELECT
+        COUNT(*) AS high_alerts
+
     FROM alerts
+
     WHERE severity = 'HIGH'
     """
 
+
     total_borrowers = pd.read_sql(
         total_borrowers_query,
-        engine
+        engine,
     )
+
 
     total_exposure = pd.read_sql(
         total_exposure_query,
-        engine
+        engine,
     )
+
 
     high_risk = pd.read_sql(
         high_risk_query,
-        engine
+        engine,
     )
+
 
     watchlist = pd.read_sql(
         watchlist_query,
-        engine
+        engine,
     )
+
 
     low_risk = pd.read_sql(
         low_risk_query,
-        engine
+        engine,
     )
+
 
     total_alerts = pd.read_sql(
         alerts_query,
-        engine
+        engine,
     )
+
 
     high_alerts = pd.read_sql(
         high_alerts_query,
-        engine
+        engine,
     )
+
 
     return {
 
         "total_borrowers":
             int(
                 total_borrowers
-                .iloc[0]["total_borrowers"]
+                .iloc[0][
+                    "total_borrowers"
+                ]
             ),
+
 
         "total_exposure":
             float(
                 total_exposure
-                .iloc[0]["total_exposure"]
+                .iloc[0][
+                    "total_exposure"
+                ]
             ),
+
 
         "high_risk":
             int(
                 high_risk
-                .iloc[0]["high_risk"]
+                .iloc[0][
+                    "high_risk"
+                ]
             ),
+
 
         "watchlist":
             int(
                 watchlist
-                .iloc[0]["watchlist"]
+                .iloc[0][
+                    "watchlist"
+                ]
             ),
+
 
         "low_risk":
             int(
                 low_risk
-                .iloc[0]["low_risk"]
+                .iloc[0][
+                    "low_risk"
+                ]
             ),
+
 
         "total_alerts":
             int(
                 total_alerts
-                .iloc[0]["total_alerts"]
+                .iloc[0][
+                    "total_alerts"
+                ]
             ),
+
 
         "high_severity_alerts":
             int(
                 high_alerts
-                .iloc[0]["high_alerts"]
+                .iloc[0][
+                    "high_alerts"
+                ]
             ),
     }
 
 
 # =========================================================
-# WATCHLIST
+# LEGACY SCORE-BASED WATCHLIST
 # =========================================================
 
 @app.get("/watchlist")
@@ -425,7 +527,9 @@ def watchlist():
 
     WHERE
         risk_scores.classification = 'Watchlist'
+
         OR
+
         risk_scores.classification = 'High Risk'
 
     ORDER BY
@@ -433,10 +537,12 @@ def watchlist():
         borrowers.id
     """
 
+
     df = pd.read_sql(
         query,
-        engine
+        engine,
     )
+
 
     return df.to_dict(
         orient="records"
@@ -469,10 +575,12 @@ def top_risk_accounts():
     LIMIT 10
     """
 
+
     df = pd.read_sql(
         query,
-        engine
+        engine,
     )
+
 
     return df.to_dict(
         orient="records"
@@ -480,7 +588,7 @@ def top_risk_accounts():
 
 
 # =========================================================
-# HIGH SEVERITY ALERTS
+# HIGH-SEVERITY ALERTS
 # =========================================================
 
 @app.get("/high_alerts")
@@ -507,10 +615,12 @@ def high_alerts():
         alerts.id DESC
     """
 
+
     df = pd.read_sql(
         query,
-        engine
+        engine,
     )
+
 
     return df.to_dict(
         orient="records"
