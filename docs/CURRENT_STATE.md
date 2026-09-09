@@ -603,3 +603,52 @@ RiskVision now has a PID-inspired analytical structure:
 - additional derivative proxy: change in velocity
 - additional layer: cross-signal convergence
 
+
+## Portfolio Intervention Intelligence - 9 September 2026
+
+RiskVision now performs portfolio-level borrower deterioration prioritization using the historical deterioration engine.
+
+New portfolio capabilities:
+- Borrower-level intervention priority: URGENT, HIGH, MEDIUM, LOW, INSUFFICIENT_DATA
+- Explainable reason codes and human-readable priority explanations
+- Recommended analyst investigations
+- Portfolio-wide intervention ranking
+- Portfolio intervention summary
+- Dashboard migration from legacy static risk-score views to deterioration-based prioritization
+
+Synthetic portfolio validation set:
+- Falcon Realty Ltd -> URGENT
+- Crest Realty Pvt Ltd -> HIGH
+- Nova Energy Ltd -> MEDIUM
+- Beta Logistics Pvt Ltd -> MEDIUM
+- Alpha Manufacturing Ltd -> LOW
+- Orion Power Projects Ltd -> INSUFFICIENT_DATA
+
+Current portfolio summary:
+- Total borrowers: 25
+- Historically assessable: 5
+- Actionable borrowers: 4
+- URGENT: 1
+- HIGH: 1
+- MEDIUM: 2
+- LOW: 1
+- INSUFFICIENT_DATA: 20
+
+New API endpoints:
+- GET /intervention_watchlist
+- GET /intervention_summary
+
+The main dashboard now displays:
+- Total Exposure
+- Intervention Priority Distribution
+- Top Intervention Accounts
+- Priority Drivers
+- Intervention Watchlist
+
+The intervention watchlist ranks borrowers using intervention priority, current critical-condition signals, cross-signal convergence, accelerating deterioration and persistent deterioration.
+
+Regression checks:
+- Falcon Realty Ltd retains full URGENT deterioration and intervention analysis.
+- Orion Power Projects Ltd correctly remains INSUFFICIENT_DATA with no false priority assignment.
+
+The current implementation uses transparent MVP heuristic logic and synthetic development thresholds. It is not a probability of default, automated lending decision, or institutionally validated credit-policy framework.
