@@ -363,9 +363,6 @@ def analyze_trajectory(
 
     # -----------------------------------------------------
     # ONE OBSERVATION
-    #
-    # Current condition can be assessed,
-    # trajectory cannot yet be calculated.
     # -----------------------------------------------------
 
     if len(values) == 1:
@@ -929,8 +926,6 @@ def build_recommended_investigations(
             )
 
 
-    # Remove duplicates while preserving order
-
     recommendations = list(
         dict.fromkeys(
             recommendations
@@ -1256,10 +1251,6 @@ def build_intervention_priority(
         )
 
 
-    # =====================================================
-    # RECOMMENDED INVESTIGATIONS
-    # =====================================================
-
     recommended_investigations = (
         build_recommended_investigations(
             analysis[
@@ -1302,31 +1293,20 @@ def analyze_borrower(
 
 
     deteriorating_signals = 0
-
     improving_signals = 0
-
     stable_signals = 0
-
     insufficient_history_signals = 0
 
 
     accelerating_deterioration_signals = 0
-
     decelerating_deterioration_signals = 0
 
 
     critical_condition_signals = 0
-
     weak_condition_signals = 0
-
     watch_condition_signals = 0
-
     healthy_condition_signals = 0
 
-
-    # =====================================================
-    # RUN ALL CONFIGURED METRICS
-    # =====================================================
 
     for metric_code in METRIC_CONFIG:
 
@@ -1596,8 +1576,7 @@ def analyze_portfolio():
     MVP implementation:
     each borrower is analyzed individually.
 
-    Later this should be optimized using batch queries
-    rather than repeated per-borrower database queries.
+    Later this should be optimized using batch queries.
     """
 
     borrower_query = """
@@ -1617,10 +1596,6 @@ def analyze_portfolio():
 
     portfolio_results = []
 
-
-    # =====================================================
-    # ANALYZE EACH BORROWER
-    # =====================================================
 
     for borrower in (
         borrowers_df.itertuples()
@@ -1725,16 +1700,6 @@ def analyze_portfolio():
     # =====================================================
     # PORTFOLIO RANKING
     # =====================================================
-    #
-    # Sort order:
-    #
-    # 1. intervention priority
-    # 2. critical-condition signals
-    # 3. cross-signal convergence
-    # 4. accelerating deterioration
-    # 5. persistent deterioration
-    #
-    # =====================================================
 
     portfolio_results.sort(
 
@@ -1786,6 +1751,149 @@ def analyze_portfolio():
 
 
 # =========================================================
+# PORTFOLIO INTERVENTION SUMMARY
+# =========================================================
+
+def summarize_portfolio_interventions():
+    """
+    Summarize borrower intervention priorities across
+    the portfolio.
+
+    This uses the deterioration engine rather than
+    the legacy static risk-score classification.
+    """
+
+    portfolio = (
+        analyze_portfolio()
+    )
+
+
+    summary = {
+
+        "total_borrowers":
+            len(
+                portfolio
+            ),
+
+        "urgent": 0,
+
+        "high": 0,
+
+        "medium": 0,
+
+        "low": 0,
+
+        "insufficient_data": 0,
+
+        "actionable_borrowers": 0,
+
+        "historically_assessable_borrowers": 0,
+    }
+
+
+    # =====================================================
+    # COUNT PRIORITIES
+    # =====================================================
+
+    for borrower in portfolio:
+
+        priority = (
+            borrower[
+                "intervention_priority"
+            ]
+        )
+
+
+        if priority == "URGENT":
+
+            summary[
+                "urgent"
+            ] += 1
+
+
+        elif priority == "HIGH":
+
+            summary[
+                "high"
+            ] += 1
+
+
+        elif priority == "MEDIUM":
+
+            summary[
+                "medium"
+            ] += 1
+
+
+        elif priority == "LOW":
+
+            summary[
+                "low"
+            ] += 1
+
+
+        elif (
+            priority
+            == "INSUFFICIENT_DATA"
+        ):
+
+            summary[
+                "insufficient_data"
+            ] += 1
+
+
+    # =====================================================
+    # BORROWERS WITH SUFFICIENT HISTORY
+    # =====================================================
+
+    summary[
+        "historically_assessable_borrowers"
+    ] = (
+
+        summary[
+            "urgent"
+        ]
+
+        + summary[
+            "high"
+        ]
+
+        + summary[
+            "medium"
+        ]
+
+        + summary[
+            "low"
+        ]
+    )
+
+
+    # =====================================================
+    # BORROWERS REQUIRING ATTENTION
+    # =====================================================
+
+    summary[
+        "actionable_borrowers"
+    ] = (
+
+        summary[
+            "urgent"
+        ]
+
+        + summary[
+            "high"
+        ]
+
+        + summary[
+            "medium"
+        ]
+    )
+
+
+    return summary
+
+
+# =========================================================
 # TEST
 # =========================================================
 
@@ -1793,6 +1901,11 @@ if __name__ == "__main__":
 
     portfolio = (
         analyze_portfolio()
+    )
+
+
+    summary = (
+        summarize_portfolio_interventions()
     )
 
 
@@ -1849,3 +1962,82 @@ if __name__ == "__main__":
 
             f"{borrower['convergence_percentage']}%"
         )
+
+
+    print()
+
+    print(
+        "=============================================================="
+    )
+
+    print(
+        "PORTFOLIO INTERVENTION SUMMARY"
+    )
+
+    print(
+        "=============================================================="
+    )
+
+
+    print(
+        "Total Borrowers:",
+        summary[
+            "total_borrowers"
+        ]
+    )
+
+
+    print(
+        "Urgent:",
+        summary[
+            "urgent"
+        ]
+    )
+
+
+    print(
+        "High:",
+        summary[
+            "high"
+        ]
+    )
+
+
+    print(
+        "Medium:",
+        summary[
+            "medium"
+        ]
+    )
+
+
+    print(
+        "Low:",
+        summary[
+            "low"
+        ]
+    )
+
+
+    print(
+        "Insufficient Data:",
+        summary[
+            "insufficient_data"
+        ]
+    )
+
+
+    print(
+        "Historically Assessable:",
+        summary[
+            "historically_assessable_borrowers"
+        ]
+    )
+
+
+    print(
+        "Actionable Borrowers:",
+        summary[
+            "actionable_borrowers"
+        ]
+    )
