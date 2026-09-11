@@ -119,6 +119,12 @@ jobs:
           PY
 
 
+      - name: Static type check
+        working-directory: backend
+        run: |
+          python -m mypy             type_contracts.py             api_schemas.py             trajectory_engine.pyi             covenant_engine.pyi             portfolio_analytics.pyi             backtest_engine.pyi
+
+
       - name: Run backend test suite
         working-directory: backend
         run: |
