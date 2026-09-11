@@ -130,6 +130,65 @@ class APIContractTests(
         )
 
 
+    def test_fastapi_routes_bind_response_models(self):
+
+        expected = {
+            "/": RootResponse,
+
+            "/borrowers/{borrower_id}/deterioration":
+                BorrowerDeteriorationResponse,
+
+            "/borrowers/{borrower_id}/replay":
+                ReplayResponse,
+
+            "/borrowers/{borrower_id}/backtest":
+                BorrowerBacktestResponse,
+
+            "/backtest_summary":
+                BacktestSummaryResponse,
+
+            "/intervention_summary":
+                InterventionSummaryResponse,
+
+            "/covenant_summary":
+                CovenantSummaryResponse,
+
+            "/portfolio_analytics":
+                PortfolioAnalyticsResponse,
+
+            "/portfolio_summary":
+                PortfolioSummaryResponse,
+        }
+
+
+        routes = {
+            route.path: route
+            for route in app.routes
+            if hasattr(
+                route,
+                "response_model",
+            )
+        }
+
+
+        for path, model in expected.items():
+
+            self.assertIn(
+                path,
+                routes,
+            )
+
+            self.assertIs(
+                routes[path].response_model,
+                model,
+                msg=(
+                    f"Incorrect response model "
+                    f"for {path}"
+                ),
+            )
+
+
+
 if __name__ == "__main__":
 
     unittest.main(

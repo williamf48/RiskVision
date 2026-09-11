@@ -1,3 +1,15 @@
+from api_schemas import (
+    BacktestSummaryResponse,
+    BorrowerBacktestResponse,
+    BorrowerDeteriorationResponse,
+    CovenantSummaryResponse,
+    InterventionSummaryResponse,
+    PortfolioAnalyticsResponse,
+    PortfolioSummaryResponse,
+    ReplayResponse,
+    RootResponse,
+)
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
@@ -60,7 +72,7 @@ app.add_middleware(
 # HOME
 # =========================================================
 
-@app.get("/")
+@app.get("/", response_model=RootResponse)
 def home():
 
     return {
@@ -206,7 +218,7 @@ def get_borrower_detail(
 # BORROWER DETERIORATION INTELLIGENCE
 # =========================================================
 
-@app.get("/borrowers/{borrower_id}/deterioration")
+@app.get("/borrowers/{borrower_id}/deterioration", response_model=BorrowerDeteriorationResponse)
 def get_borrower_deterioration(
     borrower_id: int,
 ):
@@ -519,7 +531,7 @@ def get_borrower_covenants(
 # HISTORICAL BORROWER REPLAY
 # =========================================================
 
-@app.get("/borrowers/{borrower_id}/replay")
+@app.get("/borrowers/{borrower_id}/replay", response_model=ReplayResponse)
 def borrower_replay(
     borrower_id: int,
 ):
@@ -549,7 +561,7 @@ def borrower_replay(
 # BORROWER BACKTEST
 # =========================================================
 
-@app.get("/borrowers/{borrower_id}/backtest")
+@app.get("/borrowers/{borrower_id}/backtest", response_model=BorrowerBacktestResponse)
 def borrower_backtest(
     borrower_id: int,
 ):
@@ -579,7 +591,7 @@ def borrower_backtest(
 # PORTFOLIO BACKTEST SUMMARY
 # =========================================================
 
-@app.get("/backtest_summary")
+@app.get("/backtest_summary", response_model=BacktestSummaryResponse)
 def backtest_summary():
     """
     Return portfolio-level historical replay and
@@ -610,7 +622,7 @@ def intervention_watchlist():
 # INTERVENTION SUMMARY
 # =========================================================
 
-@app.get("/intervention_summary")
+@app.get("/intervention_summary", response_model=InterventionSummaryResponse)
 def intervention_summary():
     """
     Return portfolio-level intervention priority counts.
@@ -640,7 +652,7 @@ def covenant_watchlist():
 # PORTFOLIO COVENANT SUMMARY
 # =========================================================
 
-@app.get("/covenant_summary")
+@app.get("/covenant_summary", response_model=CovenantSummaryResponse)
 def covenant_summary():
     """
     Return portfolio-level covenant pressure counts.
@@ -655,7 +667,7 @@ def covenant_summary():
 # PORTFOLIO CONCENTRATION ANALYTICS
 # =========================================================
 
-@app.get("/portfolio_analytics")
+@app.get("/portfolio_analytics", response_model=PortfolioAnalyticsResponse)
 def portfolio_analytics():
     """
     Return portfolio exposure concentration,
@@ -747,7 +759,7 @@ def get_alerts():
 # PORTFOLIO SUMMARY
 # =========================================================
 
-@app.get("/portfolio_summary")
+@app.get("/portfolio_summary", response_model=PortfolioSummaryResponse)
 def portfolio_summary():
 
     total_borrowers_query = """
