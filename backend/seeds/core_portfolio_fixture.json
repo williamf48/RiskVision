@@ -1,0 +1,1134 @@
+{
+  "borrowers": [
+    {
+      "id": 47,
+      "borrower_name": "Alpha Manufacturing Ltd",
+      "sector": "Manufacturing",
+      "loan_amount": 18.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 48,
+      "borrower_name": "Beta Logistics Pvt Ltd",
+      "sector": "Logistics",
+      "loan_amount": 22.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 49,
+      "borrower_name": "Gamma Retail Ltd",
+      "sector": "Retail",
+      "loan_amount": 15.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 50,
+      "borrower_name": "Delta Foods Pvt Ltd",
+      "sector": "FMCG",
+      "loan_amount": 30.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 51,
+      "borrower_name": "Omega Textiles Ltd",
+      "sector": "Textiles",
+      "loan_amount": 12.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 52,
+      "borrower_name": "Prime Engineering Ltd",
+      "sector": "Engineering",
+      "loan_amount": 25.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 53,
+      "borrower_name": "Horizon Auto Components Ltd",
+      "sector": "Automotive",
+      "loan_amount": 35.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 54,
+      "borrower_name": "Zenith Chemicals Pvt Ltd",
+      "sector": "Chemicals",
+      "loan_amount": 28.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 55,
+      "borrower_name": "Nova Energy Ltd",
+      "sector": "Power",
+      "loan_amount": 42.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 56,
+      "borrower_name": "Vertex Infrastructure Ltd",
+      "sector": "Infrastructure",
+      "loan_amount": 55.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 57,
+      "borrower_name": "Apex Finance Ltd",
+      "sector": "NBFC",
+      "loan_amount": 38.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 58,
+      "borrower_name": "Crest Realty Pvt Ltd",
+      "sector": "Real Estate",
+      "loan_amount": 48.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 59,
+      "borrower_name": "Sigma Steel Industries Ltd",
+      "sector": "Metals",
+      "loan_amount": 40.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 60,
+      "borrower_name": "Titan Logistics Ltd",
+      "sector": "Logistics",
+      "loan_amount": 32.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 61,
+      "borrower_name": "Meridian Agro Ltd",
+      "sector": "Agriculture",
+      "loan_amount": 20.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 62,
+      "borrower_name": "Fusion Telecom Pvt Ltd",
+      "sector": "Telecom",
+      "loan_amount": 45.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 63,
+      "borrower_name": "ABC Infra Ltd",
+      "sector": "Infrastructure",
+      "loan_amount": 75.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 64,
+      "borrower_name": "Orion Power Projects Ltd",
+      "sector": "Power",
+      "loan_amount": 82.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 65,
+      "borrower_name": "Falcon Realty Ltd",
+      "sector": "Real Estate",
+      "loan_amount": 68.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 66,
+      "borrower_name": "Stellar Steel Ltd",
+      "sector": "Metals",
+      "loan_amount": 58.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 67,
+      "borrower_name": "Atlas Telecom Ltd",
+      "sector": "Telecom",
+      "loan_amount": 52.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 68,
+      "borrower_name": "Everest Aviation Services Ltd",
+      "sector": "Aviation",
+      "loan_amount": 47.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 69,
+      "borrower_name": "Velocity Shipping Ltd",
+      "sector": "Shipping",
+      "loan_amount": 43.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 70,
+      "borrower_name": "Nexus Retail Ventures Ltd",
+      "sector": "Retail",
+      "loan_amount": 38.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 71,
+      "borrower_name": "Titan Energy Ltd",
+      "sector": "Energy",
+      "loan_amount": 88.0,
+      "created_at": "2026-06-03T23:39:55.862519"
+    }
+  ],
+  "borrower_financials": [
+    {
+      "id": 46,
+      "borrower_id": 47,
+      "dpd": 0,
+      "dscr": 2.1,
+      "revenue_decline": 3.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 47,
+      "borrower_id": 48,
+      "dpd": 2,
+      "dscr": 1.95,
+      "revenue_decline": 5.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 48,
+      "borrower_id": 49,
+      "dpd": 0,
+      "dscr": 1.8,
+      "revenue_decline": 7.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 49,
+      "borrower_id": 50,
+      "dpd": 1,
+      "dscr": 2.3,
+      "revenue_decline": 2.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 50,
+      "borrower_id": 51,
+      "dpd": 4,
+      "dscr": 1.7,
+      "revenue_decline": 8.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 51,
+      "borrower_id": 52,
+      "dpd": 0,
+      "dscr": 2.0,
+      "revenue_decline": 4.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 52,
+      "borrower_id": 53,
+      "dpd": 3,
+      "dscr": 1.85,
+      "revenue_decline": 6.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 53,
+      "borrower_id": 54,
+      "dpd": 0,
+      "dscr": 2.2,
+      "revenue_decline": 3.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 54,
+      "borrower_id": 55,
+      "dpd": 15,
+      "dscr": 1.25,
+      "revenue_decline": 12.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 55,
+      "borrower_id": 56,
+      "dpd": 20,
+      "dscr": 1.1,
+      "revenue_decline": 15.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 56,
+      "borrower_id": 57,
+      "dpd": 12,
+      "dscr": 1.2,
+      "revenue_decline": 14.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 57,
+      "borrower_id": 58,
+      "dpd": 25,
+      "dscr": 1.05,
+      "revenue_decline": 18.0,
+      "cash_flow": "Negative",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 58,
+      "borrower_id": 59,
+      "dpd": 18,
+      "dscr": 1.15,
+      "revenue_decline": 17.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 59,
+      "borrower_id": 60,
+      "dpd": 22,
+      "dscr": 1.08,
+      "revenue_decline": 19.0,
+      "cash_flow": "Negative",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 60,
+      "borrower_id": 61,
+      "dpd": 10,
+      "dscr": 1.3,
+      "revenue_decline": 11.0,
+      "cash_flow": "Positive",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 61,
+      "borrower_id": 62,
+      "dpd": 28,
+      "dscr": 1.0,
+      "revenue_decline": 20.0,
+      "cash_flow": "Negative",
+      "restructured": true,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 62,
+      "borrower_id": 63,
+      "dpd": 45,
+      "dscr": 0.85,
+      "revenue_decline": 28.0,
+      "cash_flow": "Negative",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 63,
+      "borrower_id": 64,
+      "dpd": 60,
+      "dscr": 0.7,
+      "revenue_decline": 35.0,
+      "cash_flow": "Negative",
+      "restructured": true,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 64,
+      "borrower_id": 65,
+      "dpd": 55,
+      "dscr": 0.9,
+      "revenue_decline": 30.0,
+      "cash_flow": "Negative",
+      "restructured": true,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 65,
+      "borrower_id": 66,
+      "dpd": 40,
+      "dscr": 0.95,
+      "revenue_decline": 25.0,
+      "cash_flow": "Negative",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 66,
+      "borrower_id": 67,
+      "dpd": 65,
+      "dscr": 0.75,
+      "revenue_decline": 40.0,
+      "cash_flow": "Negative",
+      "restructured": true,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 67,
+      "borrower_id": 68,
+      "dpd": 50,
+      "dscr": 0.8,
+      "revenue_decline": 32.0,
+      "cash_flow": "Negative",
+      "restructured": true,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 68,
+      "borrower_id": 69,
+      "dpd": 35,
+      "dscr": 0.92,
+      "revenue_decline": 24.0,
+      "cash_flow": "Negative",
+      "restructured": false,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 69,
+      "borrower_id": 70,
+      "dpd": 70,
+      "dscr": 0.65,
+      "revenue_decline": 45.0,
+      "cash_flow": "Negative",
+      "restructured": true,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 70,
+      "borrower_id": 71,
+      "dpd": 90,
+      "dscr": 0.6,
+      "revenue_decline": 50.0,
+      "cash_flow": "Negative",
+      "restructured": true,
+      "uploaded_at": "2026-06-03T23:39:55.862519"
+    }
+  ],
+  "risk_scores": [
+    {
+      "id": 46,
+      "borrower_id": 47,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 47,
+      "borrower_id": 48,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 48,
+      "borrower_id": 49,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 49,
+      "borrower_id": 50,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 50,
+      "borrower_id": 51,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 51,
+      "borrower_id": 52,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 52,
+      "borrower_id": 53,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 53,
+      "borrower_id": 54,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 54,
+      "borrower_id": 55,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 55,
+      "borrower_id": 56,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 56,
+      "borrower_id": 57,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 57,
+      "borrower_id": 58,
+      "score": 20.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 58,
+      "borrower_id": 59,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 59,
+      "borrower_id": 60,
+      "score": 20.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 60,
+      "borrower_id": 61,
+      "score": 0.0,
+      "classification": "Low Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 61,
+      "borrower_id": 62,
+      "score": 45.0,
+      "classification": "Watchlist",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 62,
+      "borrower_id": 63,
+      "score": 95.0,
+      "classification": "High Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 63,
+      "borrower_id": 64,
+      "score": 120.0,
+      "classification": "High Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 64,
+      "borrower_id": 65,
+      "score": 120.0,
+      "classification": "High Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 65,
+      "borrower_id": 66,
+      "score": 95.0,
+      "classification": "High Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 66,
+      "borrower_id": 67,
+      "score": 120.0,
+      "classification": "High Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 67,
+      "borrower_id": 68,
+      "score": 120.0,
+      "classification": "High Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 68,
+      "borrower_id": 69,
+      "score": 95.0,
+      "classification": "High Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 69,
+      "borrower_id": 70,
+      "score": 120.0,
+      "classification": "High Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 70,
+      "borrower_id": 71,
+      "score": 120.0,
+      "classification": "High Risk",
+      "generated_at": "2026-06-03T23:39:55.862519"
+    }
+  ],
+  "risk_history": [
+    {
+      "id": 46,
+      "borrower_id": 47,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 47,
+      "borrower_id": 48,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 48,
+      "borrower_id": 49,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 49,
+      "borrower_id": 50,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 50,
+      "borrower_id": 51,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 51,
+      "borrower_id": 52,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 52,
+      "borrower_id": 53,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 53,
+      "borrower_id": 54,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 54,
+      "borrower_id": 55,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 55,
+      "borrower_id": 56,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 56,
+      "borrower_id": 57,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 57,
+      "borrower_id": 58,
+      "old_score": 0.0,
+      "new_score": 20.0,
+      "reason": "Negative Cash Flow",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 58,
+      "borrower_id": 59,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 59,
+      "borrower_id": 60,
+      "old_score": 0.0,
+      "new_score": 20.0,
+      "reason": "Negative Cash Flow",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 60,
+      "borrower_id": 61,
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "reason": "",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 61,
+      "borrower_id": 62,
+      "old_score": 0.0,
+      "new_score": 45.0,
+      "reason": "Negative Cash Flow, Loan Restructured",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 62,
+      "borrower_id": 63,
+      "old_score": 0.0,
+      "new_score": 95.0,
+      "reason": "DPD > 30, DSCR < 1, Revenue Decline > 20%, Negative Cash Flow",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 63,
+      "borrower_id": 64,
+      "old_score": 0.0,
+      "new_score": 120.0,
+      "reason": "DPD > 30, DSCR < 1, Revenue Decline > 20%, Negative Cash Flow, Loan Restructured",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 64,
+      "borrower_id": 65,
+      "old_score": 0.0,
+      "new_score": 120.0,
+      "reason": "DPD > 30, DSCR < 1, Revenue Decline > 20%, Negative Cash Flow, Loan Restructured",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 65,
+      "borrower_id": 66,
+      "old_score": 0.0,
+      "new_score": 95.0,
+      "reason": "DPD > 30, DSCR < 1, Revenue Decline > 20%, Negative Cash Flow",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 66,
+      "borrower_id": 67,
+      "old_score": 0.0,
+      "new_score": 120.0,
+      "reason": "DPD > 30, DSCR < 1, Revenue Decline > 20%, Negative Cash Flow, Loan Restructured",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 67,
+      "borrower_id": 68,
+      "old_score": 0.0,
+      "new_score": 120.0,
+      "reason": "DPD > 30, DSCR < 1, Revenue Decline > 20%, Negative Cash Flow, Loan Restructured",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 68,
+      "borrower_id": 69,
+      "old_score": 0.0,
+      "new_score": 95.0,
+      "reason": "DPD > 30, DSCR < 1, Revenue Decline > 20%, Negative Cash Flow",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 69,
+      "borrower_id": 70,
+      "old_score": 0.0,
+      "new_score": 120.0,
+      "reason": "DPD > 30, DSCR < 1, Revenue Decline > 20%, Negative Cash Flow, Loan Restructured",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 70,
+      "borrower_id": 71,
+      "old_score": 0.0,
+      "new_score": 120.0,
+      "reason": "DPD > 30, DSCR < 1, Revenue Decline > 20%, Negative Cash Flow, Loan Restructured",
+      "changed_at": "2026-06-03T23:39:55.862519"
+    }
+  ],
+  "alerts": [
+    {
+      "id": 41,
+      "borrower_id": 58,
+      "alert_type": "Negative Cash Flow",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 42,
+      "borrower_id": 60,
+      "alert_type": "Negative Cash Flow",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 43,
+      "borrower_id": 62,
+      "alert_type": "Negative Cash Flow",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 44,
+      "borrower_id": 62,
+      "alert_type": "High Risk Borrower",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 45,
+      "borrower_id": 63,
+      "alert_type": "Payment Delay",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 46,
+      "borrower_id": 63,
+      "alert_type": "Liquidity Stress",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 47,
+      "borrower_id": 63,
+      "alert_type": "Business Deterioration",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 48,
+      "borrower_id": 63,
+      "alert_type": "Negative Cash Flow",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 49,
+      "borrower_id": 64,
+      "alert_type": "Payment Delay",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 50,
+      "borrower_id": 64,
+      "alert_type": "Liquidity Stress",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 51,
+      "borrower_id": 64,
+      "alert_type": "Business Deterioration",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 52,
+      "borrower_id": 64,
+      "alert_type": "Negative Cash Flow",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 53,
+      "borrower_id": 64,
+      "alert_type": "High Risk Borrower",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 54,
+      "borrower_id": 65,
+      "alert_type": "Payment Delay",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 55,
+      "borrower_id": 65,
+      "alert_type": "Liquidity Stress",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 56,
+      "borrower_id": 65,
+      "alert_type": "Business Deterioration",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 57,
+      "borrower_id": 65,
+      "alert_type": "Negative Cash Flow",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 58,
+      "borrower_id": 65,
+      "alert_type": "High Risk Borrower",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 59,
+      "borrower_id": 66,
+      "alert_type": "Payment Delay",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 60,
+      "borrower_id": 66,
+      "alert_type": "Liquidity Stress",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 61,
+      "borrower_id": 66,
+      "alert_type": "Business Deterioration",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 62,
+      "borrower_id": 66,
+      "alert_type": "Negative Cash Flow",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 63,
+      "borrower_id": 67,
+      "alert_type": "Payment Delay",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 64,
+      "borrower_id": 67,
+      "alert_type": "Liquidity Stress",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 65,
+      "borrower_id": 67,
+      "alert_type": "Business Deterioration",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 66,
+      "borrower_id": 67,
+      "alert_type": "Negative Cash Flow",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 67,
+      "borrower_id": 67,
+      "alert_type": "High Risk Borrower",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 68,
+      "borrower_id": 68,
+      "alert_type": "Payment Delay",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 69,
+      "borrower_id": 68,
+      "alert_type": "Liquidity Stress",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 70,
+      "borrower_id": 68,
+      "alert_type": "Business Deterioration",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 71,
+      "borrower_id": 68,
+      "alert_type": "Negative Cash Flow",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 72,
+      "borrower_id": 68,
+      "alert_type": "High Risk Borrower",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 73,
+      "borrower_id": 69,
+      "alert_type": "Payment Delay",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 74,
+      "borrower_id": 69,
+      "alert_type": "Liquidity Stress",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 75,
+      "borrower_id": 69,
+      "alert_type": "Business Deterioration",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 76,
+      "borrower_id": 69,
+      "alert_type": "Negative Cash Flow",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 77,
+      "borrower_id": 70,
+      "alert_type": "Payment Delay",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 78,
+      "borrower_id": 70,
+      "alert_type": "Liquidity Stress",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 79,
+      "borrower_id": 70,
+      "alert_type": "Business Deterioration",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 80,
+      "borrower_id": 70,
+      "alert_type": "Negative Cash Flow",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 81,
+      "borrower_id": 70,
+      "alert_type": "High Risk Borrower",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 82,
+      "borrower_id": 71,
+      "alert_type": "Payment Delay",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 83,
+      "borrower_id": 71,
+      "alert_type": "Liquidity Stress",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 84,
+      "borrower_id": 71,
+      "alert_type": "Business Deterioration",
+      "severity": "MEDIUM",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 85,
+      "borrower_id": 71,
+      "alert_type": "Negative Cash Flow",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    },
+    {
+      "id": 86,
+      "borrower_id": 71,
+      "alert_type": "High Risk Borrower",
+      "severity": "HIGH",
+      "created_at": "2026-06-03T23:39:55.862519"
+    }
+  ]
+}

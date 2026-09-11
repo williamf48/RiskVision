@@ -1,0 +1,156 @@
+﻿name: RiskVision CI
+
+on:
+  push:
+    branches:
+      - main
+      - engineering-hardening
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+
+jobs:
+
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: risk_platform_ci
+
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd "pg_isready -U postgres -d risk_platform_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: risk_platform_ci
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+
+      - name: Compile backend Python
+        working-directory: backend
+        run: |
+          python -m compileall .
+
+
+      - name: Bootstrap clean PostgreSQL database
+        working-directory: backend
+        run: |
+          python bootstrap_database.py
+
+
+      - name: Verify database schema
+        working-directory: backend
+        run: |
+          python - <<'PY'
+          from sqlalchemy import inspect
+          from connection import engine
+
+          expected = {
+              "borrowers",
+              "borrower_financials",
+              "risk_scores",
+              "risk_history",
+              "alerts",
+              "borrower_metric_observations",
+              "facilities",
+              "covenants",
+              "covenant_tests",
+              "borrower_stress_events",
+          }
+
+          actual = set(
+              inspect(engine).get_table_names()
+          )
+
+          missing = expected - actual
+
+          if missing:
+              raise SystemExit(
+                  "Missing database tables: "
+                  + ", ".join(sorted(missing))
+              )
+
+          print(
+              "Database schema verified:",
+              len(actual),
+              "tables"
+          )
+          PY
+
+
+      - name: Run backend test suite
+        working-directory: backend
+        run: |
+          python -m unittest discover \
+            -s tests \
+            -p "test_*.py" \
+            -v
+
+
+  frontend:
+    name: Frontend build
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+
+      - name: Build production frontend
+        working-directory: frontend
+        run: npm run build

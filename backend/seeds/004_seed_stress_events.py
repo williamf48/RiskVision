@@ -1,7 +1,28 @@
+import sys
+from pathlib import Path
+
 from sqlalchemy import text
 
-from connection import engine
 
+# =========================================================
+# ALLOW IMPORTS FROM BACKEND DIRECTORY
+# =========================================================
+
+BACKEND_DIR = (
+    Path(__file__)
+    .resolve()
+    .parent
+    .parent
+)
+
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(
+        0,
+        str(BACKEND_DIR),
+    )
+
+
+from connection import engine
 
 SYNTHETIC_EVENTS = [
 
