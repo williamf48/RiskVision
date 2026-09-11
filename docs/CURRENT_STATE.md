@@ -652,3 +652,146 @@ Regression checks:
 - Orion Power Projects Ltd correctly remains INSUFFICIENT_DATA with no false priority assignment.
 
 The current implementation uses transparent MVP heuristic logic and synthetic development thresholds. It is not a probability of default, automated lending decision, or institutionally validated credit-policy framework.
+
+## Interactive Risk Intelligence Workspace - 11 September 2026
+
+RiskVision was upgraded from a primarily dashboard-based interface into an interactive multi-workspace credit deterioration application.
+
+Application navigation now includes:
+- Dashboard
+- Portfolio Intelligence
+- Borrower Directory
+- Intervention Centre
+- Alerts
+- Reports
+
+New frontend routing:
+- / -> executive dashboard
+- /portfolio -> portfolio intelligence workspace
+- /borrowers -> searchable borrower directory
+- /borrower/:id -> borrower intelligence workspace
+- /interventions -> intervention review centre
+- /alerts -> alert investigation workspace
+- /reports -> reporting workspace
+
+Executive dashboard improvements:
+- clickable Total Exposure KPI
+- clickable Borrower count
+- clickable Actionable Borrowers KPI
+- clickable Urgent borrower KPI
+- Historical Coverage KPI
+- Intervention Priority Distribution
+- Highest Intervention Priorities
+- Emerging Risk Drivers
+- quick links into analyst workflows
+
+Portfolio Intelligence improvements:
+- borrower search
+- priority filtering
+- sector filtering
+- historical coverage filtering
+- exposure and sector context
+- expandable borrower rows
+- explainable Why Flagged details
+- recommended investigations
+- direct borrower drill-down
+
+Borrower Directory improvements:
+- borrower search
+- sector filtering
+- intervention-priority visibility
+- historical-coverage visibility
+- direct borrower drill-down
+
+Borrower workspace was redesigned into interactive tabs:
+- Overview
+- Deterioration
+- History
+- Alerts
+
+Borrower Overview now displays:
+- exposure
+- current legacy risk classification
+- intervention priority
+- historical observation coverage
+- borrower information
+- latest financial snapshot
+- intervention summary
+
+Deterioration workspace displays:
+- explainable intervention drivers
+- recommended analyst investigations
+- current signal condition
+- latest percentage change
+- 30-day-normalized deterioration velocity
+- trajectory direction
+- acceleration/deceleration
+- persistence
+
+New historical intelligence API:
+- GET /borrowers/{borrower_id}/history
+
+The historical API returns grouped borrower observations including:
+- metric code
+- observation date
+- value
+- reporting frequency
+- reporting period
+- source
+- data quality
+
+Borrower History workspace now supports interactive analysis of:
+- DSCR
+- Bounce Rate
+- Receivable Days
+- Debt / EBITDA
+
+Historical charts include:
+- selectable metric views
+- line-chart trajectory visualization
+- observation dates
+- hover tooltips
+- reporting frequency
+- source
+- data quality
+- underlying observation table
+
+Validated historical examples:
+- Falcon Realty Ltd: 4 metrics and 16 observations
+- Orion Power Projects Ltd: 0 observations and a clean no-history state
+
+Intervention Centre improvements:
+- borrower search
+- priority filtering
+- sector filtering
+- portfolio rank
+- exposure context
+- critical signal count
+- deteriorating signal count
+- persistent deterioration
+- accelerating deterioration
+- convergence
+- expandable Why Flagged rationale
+- recommended analyst investigations
+- direct borrower drill-down
+
+Alerts workspace improvements:
+- borrower search
+- severity filtering
+- alert-type filtering
+- expandable alert details
+- borrower links
+- direct borrower drill-down
+
+Data-quality behavior:
+- insufficient historical data remains explicitly separated from low risk
+- Orion Power Projects Ltd correctly remains INSUFFICIENT_DATA despite its legacy High Risk classification
+- borrowers with missing trajectory history do not receive false deterioration priorities
+
+Validation:
+- frontend production build completed successfully with Vite
+- 598 modules transformed
+- no frontend compilation errors
+- Vite reported only a non-blocking bundle-size warning
+
+The current deterioration and intervention framework remains transparent MVP heuristic logic using synthetic development thresholds. It is not a probability-of-default model, automated lending decision, or institutionally validated credit-policy framework.

@@ -1,18 +1,21 @@
-import Sidebar from './Sidebar'
-import Header from './Header'
-import MainDashboard from './MainDashboard'
+import { Outlet } from "react-router-dom";
+
+import Sidebar from "./Sidebar";
+
 
 function DashboardLayout() {
   return (
-    <div className="dashboard-layout">
+    <div className="app-shell">
+
       <Sidebar />
 
-      <div className="main-section">
-        <Header />
-        <MainDashboard />
-      </div>
+      <main className="app-content">
+        <Outlet />
+      </main>
+
     </div>
-  )
+  );
 }
 
-export default DashboardLayout
+
+export default DashboardLayout;

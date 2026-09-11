@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
+import pandas as pd
+
 from connection import engine
 
 from trajectory_engine import (
@@ -10,18 +12,20 @@ from trajectory_engine import (
     summarize_portfolio_interventions,
 )
 
-import pandas as pd
-
 
 # =========================================================
 # FASTAPI INITIALIZATION
 # =========================================================
 
-app = FastAPI()
+app = FastAPI(
+    title="RiskVision API",
+    description="Credit deterioration and intervention intelligence API",
+    version="0.1.0",
+)
 
 
 # =========================================================
-# CORS CONFIGURATION
+# CORS
 # =========================================================
 
 app.add_middleware(
@@ -41,7 +45,7 @@ app.add_middleware(
 def home():
 
     return {
-        "message": "Risk Platform Running"
+        "message": "RiskVision API Running"
     }
 
 
@@ -104,6 +108,7 @@ def get_borrower_detail(
         WHERE borrowers.id = :borrower_id
     """)
 
+
     borrower_df = pd.read_sql(
         borrower_query,
         engine,
@@ -121,6 +126,10 @@ def get_borrower_detail(
             detail="Borrower not found",
         )
 
+
+    # -----------------------------------------------------
+    # ACTIVE ALERTS FOR BORROWER
+    # -----------------------------------------------------
 
     alert_query = text("""
         SELECT
@@ -234,22 +243,237 @@ def get_borrower_deterioration(
 
 
 # =========================================================
+# BORROWER HISTORICAL SIGNALS
+# =========================================================
+
+@app.get("/borrowers/{borrower_id}/history")
+def get_borrower_history(
+    borrower_id: int,
+):
+
+    # -----------------------------------------------------
+    # VERIFY BORROWER EXISTS
+    # -----------------------------------------------------
+
+    borrower_query = text("""
+        SELECT
+            id,
+            borrower_name
+
+        FROM borrowers
+
+        WHERE id = :borrower_id
+    """)
+
+
+    with engine.connect() as conn:
+
+        borrower = conn.execute(
+            borrower_query,
+            {
+                "borrower_id":
+                    borrower_id
+            },
+        ).mappings().one_or_none()
+
+
+    if borrower is None:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Borrower not found",
+        )
+
+
+    # -----------------------------------------------------
+    # LOAD HISTORICAL OBSERVATIONS
+    # -----------------------------------------------------
+
+    history_query = text("""
+        SELECT
+            metric_code,
+            metric_value,
+            observation_date,
+            period_start,
+            period_end,
+            reporting_frequency,
+            source,
+            data_quality
+
+        FROM borrower_metric_observations
+
+        WHERE borrower_id = :borrower_id
+
+        ORDER BY
+            metric_code,
+            observation_date
+    """)
+
+
+    history_df = pd.read_sql(
+        history_query,
+        engine,
+        params={
+            "borrower_id":
+                borrower_id
+        },
+    )
+
+
+    # -----------------------------------------------------
+    # BUILD GROUPED METRIC RESPONSE
+    # -----------------------------------------------------
+
+    metrics = {}
+
+
+    for _, row in history_df.iterrows():
+
+        metric_code = (
+            row[
+                "metric_code"
+            ]
+        )
+
+
+        if metric_code not in metrics:
+
+            metrics[
+                metric_code
+            ] = []
+
+
+        observation_date = (
+            pd.Timestamp(
+                row[
+                    "observation_date"
+                ]
+            )
+            .strftime(
+                "%Y-%m-%d"
+            )
+        )
+
+
+        period_start = None
+
+        if pd.notna(
+            row[
+                "period_start"
+            ]
+        ):
+
+            period_start = (
+                pd.Timestamp(
+                    row[
+                        "period_start"
+                    ]
+                )
+                .strftime(
+                    "%Y-%m-%d"
+                )
+            )
+
+
+        period_end = None
+
+        if pd.notna(
+            row[
+                "period_end"
+            ]
+        ):
+
+            period_end = (
+                pd.Timestamp(
+                    row[
+                        "period_end"
+                    ]
+                )
+                .strftime(
+                    "%Y-%m-%d"
+                )
+            )
+
+
+        metrics[
+            metric_code
+        ].append({
+
+            "date":
+                observation_date,
+
+            "value":
+                float(
+                    row[
+                        "metric_value"
+                    ]
+                ),
+
+            "period_start":
+                period_start,
+
+            "period_end":
+                period_end,
+
+            "reporting_frequency":
+                row[
+                    "reporting_frequency"
+                ],
+
+            "source":
+                row[
+                    "source"
+                ],
+
+            "data_quality":
+                row[
+                    "data_quality"
+                ],
+        })
+
+
+    # -----------------------------------------------------
+    # RETURN
+    # -----------------------------------------------------
+
+    return {
+
+        "borrower_id":
+            borrower[
+                "id"
+            ],
+
+        "borrower_name":
+            borrower[
+                "borrower_name"
+            ],
+
+        "metric_count":
+            len(
+                metrics
+            ),
+
+        "observation_count":
+            int(
+                len(
+                    history_df
+                )
+            ),
+
+        "metrics":
+            metrics,
+    }
+
+
+# =========================================================
 # INTERVENTION WATCHLIST
 # =========================================================
 
 @app.get("/intervention_watchlist")
 def intervention_watchlist():
     """
-    Return the entire portfolio ranked by
-    explainable borrower intervention priority.
-
-    Priority order:
-
-    URGENT
-    HIGH
-    MEDIUM
-    LOW
-    INSUFFICIENT_DATA
+    Return entire portfolio ranked by explainable
+    intervention priority.
     """
 
     return analyze_portfolio()
@@ -262,8 +486,8 @@ def intervention_watchlist():
 @app.get("/intervention_summary")
 def intervention_summary():
     """
-    Return portfolio-level intervention priority counts
-    generated by the deterioration intelligence engine.
+    Return portfolio-level intervention counts generated
+    by the deterioration intelligence engine.
     """
 
     return summarize_portfolio_interventions()
@@ -304,7 +528,7 @@ def get_risk_scores():
 
 
 # =========================================================
-# GET ALERTS
+# GET ALL ALERTS
 # =========================================================
 
 @app.get("/alerts")
@@ -466,7 +690,6 @@ def portfolio_summary():
                 ]
             ),
 
-
         "total_exposure":
             float(
                 total_exposure
@@ -474,7 +697,6 @@ def portfolio_summary():
                     "total_exposure"
                 ]
             ),
-
 
         "high_risk":
             int(
@@ -484,7 +706,6 @@ def portfolio_summary():
                 ]
             ),
 
-
         "watchlist":
             int(
                 watchlist
@@ -492,7 +713,6 @@ def portfolio_summary():
                     "watchlist"
                 ]
             ),
-
 
         "low_risk":
             int(
@@ -502,7 +722,6 @@ def portfolio_summary():
                 ]
             ),
 
-
         "total_alerts":
             int(
                 total_alerts
@@ -510,7 +729,6 @@ def portfolio_summary():
                     "total_alerts"
                 ]
             ),
-
 
         "high_severity_alerts":
             int(

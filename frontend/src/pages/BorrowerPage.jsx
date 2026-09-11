@@ -1,8 +1,18 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 
-const metricLabels = {
+const METRIC_LABELS = {
   DSCR: "DSCR",
   BOUNCE_RATE: "Bounce Rate",
   RECEIVABLE_DAYS: "Receivable Days",
@@ -10,54 +20,206 @@ const metricLabels = {
 };
 
 
+const METRIC_ORDER = [
+  "DSCR",
+  "BOUNCE_RATE",
+  "RECEIVABLE_DAYS",
+  "DEBT_EBITDA",
+];
+
+
+function formatBoolean(value) {
+
+  if (value === true) {
+    return "Yes";
+  }
+
+  if (value === false) {
+    return "No";
+  }
+
+  return value ?? "—";
+}
+
+
+function HistoryTooltip({
+  active,
+  payload,
+  label,
+}) {
+
+  if (
+    !active ||
+    !payload ||
+    payload.length === 0
+  ) {
+    return null;
+  }
+
+
+  const observation =
+    payload[0].payload;
+
+
+  return (
+    <div className="history-tooltip">
+
+      <strong>
+        {label}
+      </strong>
+
+      <p>
+        Value: {observation.value}
+      </p>
+
+      <p>
+        Frequency:{" "}
+        {
+          observation.reporting_frequency
+          || "—"
+        }
+      </p>
+
+      <p>
+        Source:{" "}
+        {
+          observation.source
+          || "—"
+        }
+      </p>
+
+      <p>
+        Data quality:{" "}
+        {
+          observation.data_quality
+          || "—"
+        }
+      </p>
+
+    </div>
+  );
+}
+
+
 function BorrowerPage() {
+
   const { id } = useParams();
 
-  const [borrower, setBorrower] = useState(null);
-  const [deterioration, setDeterioration] = useState(null);
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [borrower, setBorrower] =
+    useState(null);
 
+  const [deterioration, setDeterioration] =
+    useState(null);
+
+  const [history, setHistory] =
+    useState(null);
+
+  const [activeTab, setActiveTab] =
+    useState("overview");
+
+  const [selectedMetric, setSelectedMetric] =
+    useState("DSCR");
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState(null);
+
+
+  // =====================================================
+  // LOAD BORROWER DATA
+  // =====================================================
 
   useEffect(() => {
+
     setLoading(true);
     setError(null);
 
+
     Promise.all([
-      fetch(`http://127.0.0.1:8000/borrowers/${id}`),
+      fetch(
+        `http://127.0.0.1:8000/borrowers/${id}`
+      ),
       fetch(
         `http://127.0.0.1:8000/borrowers/${id}/deterioration`
       ),
+      fetch(
+        `http://127.0.0.1:8000/borrowers/${id}/history`
+      ),
     ])
-      .then(async ([borrowerResponse, deteriorationResponse]) => {
+
+      .then(async (
+        [
+          borrowerResponse,
+          deteriorationResponse,
+          historyResponse,
+        ]
+      ) => {
 
         if (!borrowerResponse.ok) {
-          throw new Error("Borrower not found");
+          throw new Error(
+            "Borrower could not be loaded"
+          );
         }
 
         if (!deteriorationResponse.ok) {
           throw new Error(
-            "Unable to load deterioration analysis"
+            "Deterioration intelligence could not be loaded"
           );
         }
 
-        const borrowerData =
-          await borrowerResponse.json();
+        if (!historyResponse.ok) {
+          throw new Error(
+            "Historical observations could not be loaded"
+          );
+        }
 
-        const deteriorationData =
-          await deteriorationResponse.json();
 
         return {
-          borrowerData,
-          deteriorationData,
+          borrower:
+            await borrowerResponse.json(),
+
+          deterioration:
+            await deteriorationResponse.json(),
+
+          history:
+            await historyResponse.json(),
         };
       })
 
-      .then(({ borrowerData, deteriorationData }) => {
+      .then((data) => {
 
-        setBorrower(borrowerData);
-        setDeterioration(deteriorationData);
+        setBorrower(
+          data.borrower
+        );
+
+        setDeterioration(
+          data.deterioration
+        );
+
+        setHistory(
+          data.history
+        );
+
+
+        const availableMetrics =
+          METRIC_ORDER.filter(
+            (metric) =>
+              data.history.metrics?.[metric]
+                ?.length > 0
+          );
+
+
+        if (availableMetrics.length > 0) {
+
+          setSelectedMetric(
+            availableMetrics[0]
+          );
+
+        }
+
 
         setLoading(false);
       })
@@ -65,352 +227,695 @@ function BorrowerPage() {
       .catch((error) => {
 
         console.error(
-          "Error loading borrower:",
+          "Borrower page error:",
           error
         );
 
-        setError(error.message);
+        setError(
+          error.message
+        );
+
         setLoading(false);
       });
 
   }, [id]);
 
 
+  // =====================================================
+  // HISTORY
+  // =====================================================
+
+  const availableMetrics = useMemo(() => {
+
+    if (!history) {
+      return [];
+    }
+
+
+    return METRIC_ORDER.filter(
+      (metric) =>
+        history.metrics?.[metric]
+          ?.length > 0
+    );
+
+  }, [history]);
+
+
+  const selectedHistory = useMemo(() => {
+
+    if (
+      !history ||
+      !selectedMetric
+    ) {
+      return [];
+    }
+
+
+    return (
+      history.metrics?.[
+        selectedMetric
+      ] || []
+    );
+
+  }, [
+    history,
+    selectedMetric,
+  ]);
+
+
+  // =====================================================
+  // LOADING / ERROR
+  // =====================================================
+
   if (loading) {
+
     return (
-      <div
-        style={{
-          padding: "30px",
-          color: "white",
-          backgroundColor: "#0f172a",
-          minHeight: "100vh",
-        }}
-      >
-        <h2>Loading borrower...</h2>
+      <div className="page">
+
+        <div className="borrower-loading">
+          Loading borrower intelligence...
+        </div>
+
       </div>
     );
   }
 
 
-  if (error || !borrower) {
+  if (
+    error ||
+    !borrower ||
+    !deterioration
+  ) {
+
     return (
-      <div
-        style={{
-          padding: "30px",
-          color: "white",
-          backgroundColor: "#0f172a",
-          minHeight: "100vh",
-        }}
-      >
-        <h2>Unable to load borrower</h2>
+      <div className="page">
 
-        <p>{error}</p>
+        <div className="borrower-error">
 
-        <br />
+          <h2>
+            Unable to load borrower
+          </h2>
 
-        <Link to="/">
-          Return to Dashboard
-        </Link>
+          <p>
+            {error}
+          </p>
+
+          <Link
+            to="/borrowers"
+            className="primary-button"
+          >
+            Back to Borrowers
+          </Link>
+
+        </div>
+
       </div>
     );
   }
+
+
+  const priority =
+    deterioration
+      .intervention_priority;
+
+
+  const hasTrajectory =
+    deterioration
+      .metrics_analyzed > 0;
 
 
   return (
-    <div
-      style={{
-        padding: "30px",
-        color: "white",
-        backgroundColor: "#0f172a",
-        minHeight: "100vh",
-      }}
-    >
+    <div className="page">
 
-      <Link
-        to="/"
-        style={{
-          color: "#60a5fa",
-          textDecoration: "none",
-        }}
-      >
-        ← Back to Dashboard
-      </Link>
+      {/* =================================================
+          PAGE HEADER
+          ================================================= */}
 
+      <div className="borrower-page-header">
 
-      <h1
-        style={{
-          marginTop: "20px",
-          marginBottom: "25px",
-        }}
-      >
-        Borrower Risk Profile
-      </h1>
+        <div>
 
-
-      {/* ================================================= */}
-      {/* BORROWER INFORMATION */}
-      {/* ================================================= */}
-
-      <div
-        style={{
-          backgroundColor: "#1e293b",
-          padding: "20px",
-          borderRadius: "10px",
-          marginBottom: "20px",
-        }}
-      >
-
-        <h2>Borrower Information</h2>
-
-        <br />
-
-        <p>
-          <strong>Borrower ID:</strong>{" "}
-          {borrower.borrower_id}
-        </p>
-
-        <p>
-          <strong>Name:</strong>{" "}
-          {borrower.borrower_name}
-        </p>
-
-        <p>
-          <strong>Sector:</strong>{" "}
-          {borrower.sector}
-        </p>
-
-        <p>
-          <strong>Loan Amount:</strong>{" "}
-          {borrower.loan_amount}
-        </p>
-
-      </div>
-
-
-      {/* ================================================= */}
-      {/* FINANCIAL METRICS */}
-      {/* ================================================= */}
-
-      <div
-        style={{
-          backgroundColor: "#1e293b",
-          padding: "20px",
-          borderRadius: "10px",
-          marginBottom: "20px",
-        }}
-      >
-
-        <h2>Financial Metrics</h2>
-
-        <br />
-
-        <p>
-          <strong>DPD:</strong>{" "}
-          {borrower.dpd}
-        </p>
-
-        <p>
-          <strong>DSCR:</strong>{" "}
-          {borrower.dscr}
-        </p>
-
-        <p>
-          <strong>Revenue Decline:</strong>{" "}
-          {borrower.revenue_decline}%
-        </p>
-
-        <p>
-          <strong>Cash Flow:</strong>{" "}
-          {borrower.cash_flow}
-        </p>
-
-        <p>
-          <strong>Restructured:</strong>{" "}
-          {borrower.restructured
-            ? "Yes"
-            : "No"}
-        </p>
-
-      </div>
-
-
-      {/* ================================================= */}
-      {/* CURRENT RISK */}
-      {/* ================================================= */}
-
-      <div
-        style={{
-          backgroundColor: "#1e293b",
-          padding: "20px",
-          borderRadius: "10px",
-          marginBottom: "20px",
-        }}
-      >
-
-        <h2>Current Risk Assessment</h2>
-
-        <br />
-
-        <p>
-          <strong>Risk Score:</strong>{" "}
-          {borrower.score}
-        </p>
-
-        <p>
-          <strong>Classification:</strong>{" "}
-          <span
-            style={{
-              fontWeight: "bold",
-            }}
+          <Link
+            to="/borrowers"
+            className="back-link"
           >
-            {borrower.classification}
-          </span>
-        </p>
-
-      </div>
+            ← Borrower Directory
+          </Link>
 
 
-      {/* ================================================= */}
-      {/* DETERIORATION INTELLIGENCE */}
-      {/* ================================================= */}
+          <div className="borrower-title-row">
 
-      <div
-        style={{
-          backgroundColor: "#1e293b",
-          padding: "20px",
-          borderRadius: "10px",
-          marginBottom: "20px",
-        }}
-      >
+            <div>
 
-        <h2>Deterioration Intelligence</h2>
+              <h1>
+                {
+                  borrower
+                    .borrower_name
+                }
+              </h1>
 
-        <br />
+              <p>
+                {
+                  borrower.sector
+                  || "Sector unavailable"
+                }
+                {" · Borrower ID "}
+                {
+                  borrower
+                    .borrower_id
+                }
+              </p>
 
-        {!deterioration ? (
+            </div>
 
-          <p>
-            Deterioration analysis unavailable.
-          </p>
 
-        ) : deterioration.metrics_analyzed === 0 ? (
-
-          <div>
-
-            <p>
-              <strong>Status:</strong>{" "}
-              Insufficient historical data
-            </p>
-
-            <p>
-              Historical signals available: 0 /{" "}
-              {deterioration.configured_metrics}
-            </p>
-
-            <p>
-              RiskVision requires multiple historical
-              observations before trajectory deterioration
-              can be assessed.
-            </p>
+            <span
+              className={
+                `priority-badge large ${
+                  priority
+                    .toLowerCase()
+                }`
+              }
+            >
+              {priority}
+            </span>
 
           </div>
 
-        ) : (
+        </div>
 
-          <div>
-
-            {/* =========================================== */}
-            {/* INTERVENTION PRIORITY */}
-            {/* =========================================== */}
-
-            <h3>Intervention Priority</h3>
-
-            <br />
-
-            <p
-              style={{
-                fontSize: "24px",
-                fontWeight: "bold",
-              }}
-            >
-              {deterioration.intervention_priority}
-            </p>
-
-            <p>
-              <strong>Priority Rank:</strong>{" "}
-              {deterioration.priority_rank}
-            </p>
+      </div>
 
 
-            <br />
+      {/* =================================================
+          QUICK SUMMARY
+          ================================================= */}
 
-            {/* =========================================== */}
-            {/* WHY FLAGGED */}
-            {/* =========================================== */}
+      <div className="borrower-summary-grid">
 
-            <h3>Why Flagged?</h3>
+        <div className="borrower-summary-card">
 
-            <br />
+          <span>
+            Exposure
+          </span>
 
-            <ul>
-
-              {deterioration.explanations.map(
-                (explanation, index) => (
-
-                  <li
-                    key={`explanation-${index}`}
-                    style={{
-                      marginBottom: "10px",
-                    }}
-                  >
-                    {explanation}
-                  </li>
-
-                )
-              )}
-
-            </ul>
-
-
-            <br />
-
-            {/* =========================================== */}
-            {/* RECOMMENDED INVESTIGATION */}
-            {/* =========================================== */}
-
-            <h3>Recommended Investigation</h3>
-
-            <br />
-
+          <strong>
+            ₹
             {
-              deterioration
-                .recommended_investigations
-                .length === 0
-                ? (
+              borrower
+                .loan_amount
+            }
+            {" Cr"}
+          </strong>
 
-                  <p>
-                    No specific investigation
-                    recommendations generated.
-                  </p>
+        </div>
 
-                )
-                : (
 
-                  <ul>
+        <div className="borrower-summary-card">
+
+          <span>
+            Current Risk
+          </span>
+
+          <strong>
+            {
+              borrower
+                .classification
+            }
+          </strong>
+
+        </div>
+
+
+        <div className="borrower-summary-card">
+
+          <span>
+            Intervention Priority
+          </span>
+
+          <strong>
+            {priority}
+          </strong>
+
+        </div>
+
+
+        <div className="borrower-summary-card">
+
+          <span>
+            Historical Coverage
+          </span>
+
+          <strong>
+            {
+              history
+                ?.observation_count
+              || 0
+            }
+            {" observations"}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      {/* =================================================
+          TABS
+          ================================================= */}
+
+      <div className="borrower-tabs">
+
+        <button
+          className={
+            activeTab === "overview"
+              ? "borrower-tab active"
+              : "borrower-tab"
+          }
+          onClick={() =>
+            setActiveTab(
+              "overview"
+            )
+          }
+        >
+          Overview
+        </button>
+
+
+        <button
+          className={
+            activeTab === "deterioration"
+              ? "borrower-tab active"
+              : "borrower-tab"
+          }
+          onClick={() =>
+            setActiveTab(
+              "deterioration"
+            )
+          }
+        >
+          Deterioration
+        </button>
+
+
+        <button
+          className={
+            activeTab === "history"
+              ? "borrower-tab active"
+              : "borrower-tab"
+          }
+          onClick={() =>
+            setActiveTab(
+              "history"
+            )
+          }
+        >
+          History
+        </button>
+
+
+        <button
+          className={
+            activeTab === "alerts"
+              ? "borrower-tab active"
+              : "borrower-tab"
+          }
+          onClick={() =>
+            setActiveTab(
+              "alerts"
+            )
+          }
+        >
+          Alerts
+          {" ("}
+          {
+            borrower
+              .alerts
+              ?.length || 0
+          }
+          {")"}
+        </button>
+
+      </div>
+
+
+      {/* =================================================
+          OVERVIEW TAB
+          ================================================= */}
+
+      {activeTab === "overview" && (
+
+        <div className="borrower-tab-content">
+
+          <div className="borrower-content-grid">
+
+            <section className="section-card">
+
+              <div className="section-heading">
+
+                <h2>
+                  Borrower Information
+                </h2>
+
+                <p>
+                  Current facility and borrower profile.
+                </p>
+
+              </div>
+
+
+              <div className="detail-grid">
+
+                <div>
+                  <span>Borrower ID</span>
+                  <strong>
+                    {
+                      borrower
+                        .borrower_id
+                    }
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Sector</span>
+                  <strong>
+                    {
+                      borrower.sector
+                      || "—"
+                    }
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Exposure</span>
+                  <strong>
+                    ₹
+                    {
+                      borrower
+                        .loan_amount
+                    }
+                    {" Cr"}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Risk Score</span>
+                  <strong>
+                    {
+                      borrower.score
+                      ?? "—"
+                    }
+                  </strong>
+                </div>
+
+              </div>
+
+            </section>
+
+
+            <section className="section-card">
+
+              <div className="section-heading">
+
+                <h2>
+                  Financial Snapshot
+                </h2>
+
+                <p>
+                  Latest borrower-level financial indicators.
+                </p>
+
+              </div>
+
+
+              <div className="detail-grid">
+
+                <div>
+                  <span>DPD</span>
+                  <strong>
+                    {
+                      borrower.dpd
+                      ?? "—"
+                    }
+                  </strong>
+                </div>
+
+                <div>
+                  <span>DSCR</span>
+                  <strong>
+                    {
+                      borrower.dscr
+                      ?? "—"
+                    }
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Revenue Decline</span>
+                  <strong>
+                    {
+                      borrower
+                        .revenue_decline
+                      ?? "—"
+                    }
+                    %
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Cash Flow</span>
+                  <strong>
+                    {
+                      borrower
+                        .cash_flow
+                      ?? "—"
+                    }
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Restructured</span>
+                  <strong>
+                    {
+                      formatBoolean(
+                        borrower
+                          .restructured
+                      )
+                    }
+                  </strong>
+                </div>
+
+              </div>
+
+            </section>
+
+          </div>
+
+
+          <section className="section-card borrower-intervention-summary">
+
+            <div className="section-heading">
+
+              <h2>
+                Intervention Summary
+              </h2>
+
+              <p>
+                Explainable output from the borrower deterioration engine.
+              </p>
+
+            </div>
+
+
+            {priority ===
+            "INSUFFICIENT_DATA" ? (
+
+              <div className="insufficient-state">
+
+                <h3>
+                  Insufficient historical data
+                </h3>
+
+                <p>
+                  RiskVision currently has{" "}
+                  {
+                    deterioration
+                      .metrics_analyzed
+                  }
+                  {" of "}
+                  {
+                    deterioration
+                      .configured_metrics
+                  }
+                  {" historical signals available for trajectory analysis."}
+                </p>
+
+              </div>
+
+            ) : (
+
+              <div className="intervention-overview-grid">
+
+                <div>
+
+                  <span>
+                    Priority Rank
+                  </span>
+
+                  <strong>
+                    {
+                      deterioration
+                        .priority_rank
+                    }
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    Deteriorating
+                  </span>
+
+                  <strong>
+                    {
+                      deterioration
+                        .deteriorating_signals
+                    }
+                    /
+                    {
+                      deterioration
+                        .metrics_analyzed
+                    }
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    Persistent
+                  </span>
+
+                  <strong>
+                    {
+                      deterioration
+                        .persistent_deterioration_signals
+                    }
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    Accelerating
+                  </span>
+
+                  <strong>
+                    {
+                      deterioration
+                        .accelerating_deterioration_signals
+                    }
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    Convergence
+                  </span>
+
+                  <strong>
+                    {
+                      deterioration
+                        .convergence_percentage
+                    }
+                    %
+                  </strong>
+
+                </div>
+
+              </div>
+
+            )}
+
+          </section>
+
+        </div>
+
+      )}
+
+
+      {/* =================================================
+          DETERIORATION TAB
+          ================================================= */}
+
+      {activeTab === "deterioration" && (
+
+        <div className="borrower-tab-content">
+
+          {!hasTrajectory ? (
+
+            <section className="section-card">
+
+              <div className="insufficient-state">
+
+                <h2>
+                  Insufficient historical data
+                </h2>
+
+                <p>
+                  Multiple historical observations are required before trajectory deterioration can be assessed.
+                </p>
+
+              </div>
+
+            </section>
+
+          ) : (
+
+            <>
+
+              <div className="borrower-content-grid">
+
+                <section className="section-card">
+
+                  <div className="section-heading">
+
+                    <h2>
+                      Why Flagged?
+                    </h2>
+
+                    <p>
+                      Primary drivers behind the intervention priority.
+                    </p>
+
+                  </div>
+
+
+                  <ul className="intelligence-list">
 
                     {
                       deterioration
-                        .recommended_investigations
+                        .explanations
                         .map(
-                          (recommendation, index) => (
+                          (
+                            explanation,
+                            index
+                          ) => (
 
                             <li
-                              key={`recommendation-${index}`}
-                              style={{
-                                marginBottom: "10px",
-                              }}
+                              key={index}
                             >
-                              {recommendation}
+                              {
+                                explanation
+                              }
                             </li>
 
                           )
@@ -419,423 +924,582 @@ function BorrowerPage() {
 
                   </ul>
 
-                )
-            }
+                </section>
 
 
-            <br />
+                <section className="section-card">
 
-            {/* =========================================== */}
-            {/* CURRENT CONDITION */}
-            {/* =========================================== */}
+                  <div className="section-heading">
 
-            <h3>Current Condition</h3>
+                    <h2>
+                      Recommended Investigation
+                    </h2>
 
-            <br />
+                    <p>
+                      Analyst review actions suggested by the current signals.
+                    </p>
 
-            <p>
-              <strong>Critical Signals:</strong>{" "}
-              {
-                deterioration
-                  .critical_condition_signals
-              }
-            </p>
-
-            <p>
-              <strong>Weak Signals:</strong>{" "}
-              {
-                deterioration
-                  .weak_condition_signals
-              }
-            </p>
-
-            <p>
-              <strong>Watch Signals:</strong>{" "}
-              {
-                deterioration
-                  .watch_condition_signals
-              }
-            </p>
-
-            <p>
-              <strong>Healthy Signals:</strong>{" "}
-              {
-                deterioration
-                  .healthy_condition_signals
-              }
-            </p>
+                  </div>
 
 
-            <br />
+                  <ul className="intelligence-list">
 
-            {/* =========================================== */}
-            {/* TRAJECTORY */}
-            {/* =========================================== */}
+                    {
+                      deterioration
+                        .recommended_investigations
+                        .map(
+                          (
+                            recommendation,
+                            index
+                          ) => (
 
-            <h3>Trajectory</h3>
+                            <li
+                              key={index}
+                            >
+                              {
+                                recommendation
+                              }
+                            </li>
 
-            <br />
+                          )
+                        )
+                    }
 
-            <p>
-              <strong>Signals Analyzed:</strong>{" "}
-              {deterioration.metrics_analyzed}
-            </p>
+                  </ul>
 
-            <p>
-              <strong>Deteriorating Signals:</strong>{" "}
-              {
-                deterioration
-                  .deteriorating_signals
-              }
-            </p>
+                </section>
 
-            <p>
-              <strong>
-                Persistent Deterioration:
-              </strong>{" "}
-              {
-                deterioration
-                  .persistent_deterioration_signals
-              }
-            </p>
-
-            <p>
-              <strong>
-                Accelerating Deterioration:
-              </strong>{" "}
-              {
-                deterioration
-                  .accelerating_deterioration_signals
-              }
-            </p>
-
-            <p>
-              <strong>
-                Decelerating Deterioration:
-              </strong>{" "}
-              {
-                deterioration
-                  .decelerating_deterioration_signals
-              }
-            </p>
-
-            <p>
-              <strong>
-                Cross-Signal Convergence:
-              </strong>{" "}
-              {
-                deterioration
-                  .convergence_percentage
-              }
-              %
-            </p>
+              </div>
 
 
-            <br />
+              <section className="section-card">
 
-            {/* =========================================== */}
-            {/* SIGNAL ANALYSIS */}
-            {/* =========================================== */}
+                <div className="section-heading">
 
-            <h3>Signal Analysis</h3>
+                  <h2>
+                    Signal Analysis
+                  </h2>
 
-            <br />
+                  <p>
+                    Current condition and trajectory characteristics by signal.
+                  </p>
 
-
-            <div
-              style={{
-                overflowX: "auto",
-              }}
-            >
-
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                }}
-              >
-
-                <thead>
-
-                  <tr>
-
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      Signal
-                    </th>
-
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      Current
-                    </th>
-
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      Condition
-                    </th>
-
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      Latest Change
-                    </th>
-
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      Velocity / 30d
-                    </th>
-
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      Direction
-                    </th>
-
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      Acceleration
-                    </th>
-
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      Persistence
-                    </th>
-
-                  </tr>
-
-                </thead>
+                </div>
 
 
-                <tbody>
+                <div className="table-scroll">
 
-                  {
-                    deterioration
-                      .metric_results
-                      .map(
+                  <table className="data-table">
+
+                    <thead>
+
+                      <tr>
+                        <th>Signal</th>
+                        <th>Current</th>
+                        <th>Condition</th>
+                        <th>Latest Change</th>
+                        <th>Velocity / 30d</th>
+                        <th>Direction</th>
+                        <th>Acceleration</th>
+                        <th>Persistence</th>
+                      </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                      {
+                        deterioration
+                          .metric_results
+                          .map(
+                            (metric) => (
+
+                              <tr
+                                key={
+                                  metric
+                                    .metric_code
+                                }
+                              >
+
+                                <td>
+                                  {
+                                    METRIC_LABELS[
+                                      metric
+                                        .metric_code
+                                    ]
+                                    ||
+                                    metric
+                                      .metric_code
+                                  }
+                                </td>
+
+                                <td>
+                                  {
+                                    metric
+                                      .current_value
+                                    ?? "—"
+                                  }
+                                </td>
+
+                                <td>
+                                  {
+                                    metric
+                                      .condition
+                                  }
+                                </td>
+
+                                <td>
+                                  {
+                                    metric
+                                      .percentage_change
+                                    !== null
+                                      ? `${metric.percentage_change}%`
+                                      : "—"
+                                  }
+                                </td>
+
+                                <td>
+                                  {
+                                    metric
+                                      .risk_velocity_30d
+                                    !== null
+                                      ? `${metric.risk_velocity_30d}%`
+                                      : "—"
+                                  }
+                                </td>
+
+                                <td>
+                                  {
+                                    metric
+                                      .direction
+                                  }
+                                </td>
+
+                                <td>
+                                  {
+                                    metric
+                                      .acceleration_direction
+                                  }
+                                </td>
+
+                                <td>
+                                  {
+                                    metric
+                                      .persistence
+                                  }
+                                </td>
+
+                              </tr>
+
+                            )
+                          )
+                      }
+
+                    </tbody>
+
+                  </table>
+
+                </div>
+
+              </section>
+
+            </>
+
+          )}
+
+        </div>
+
+      )}
+
+
+      {/* =================================================
+          HISTORY TAB
+          ================================================= */}
+
+      {activeTab === "history" && (
+
+        <div className="borrower-tab-content">
+
+          {
+            history
+              ?.observation_count === 0
+            ? (
+
+              <section className="section-card">
+
+                <div className="insufficient-state">
+
+                  <h2>
+                    No historical observations
+                  </h2>
+
+                  <p>
+                    Historical signal data has not yet been loaded for this borrower.
+                  </p>
+
+                </div>
+
+              </section>
+
+            ) : (
+
+              <>
+
+                <section className="section-card">
+
+                  <div className="history-header">
+
+                    <div className="section-heading">
+
+                      <h2>
+                        Historical Signal Analysis
+                      </h2>
+
+                      <p>
+                        Select a signal to inspect its observed trajectory.
+                      </p>
+
+                    </div>
+
+
+                    <div className="history-coverage">
+
+                      {
+                        history
+                          .observation_count
+                      }
+                      {" observations · "}
+                      {
+                        history
+                          .metric_count
+                      }
+                      {" metrics"}
+
+                    </div>
+
+                  </div>
+
+
+                  <div className="metric-selector">
+
+                    {
+                      availableMetrics.map(
                         (metric) => (
 
-                          <tr
-                            key={
-                              metric.metric_code
+                          <button
+                            key={metric}
+                            className={
+                              selectedMetric === metric
+                                ? "metric-button active"
+                                : "metric-button"
+                            }
+                            onClick={() =>
+                              setSelectedMetric(
+                                metric
+                              )
                             }
                           >
-
-                            <td
-                              style={{
-                                padding: "10px",
-                              }}
-                            >
-                              {
-                                metricLabels[
-                                  metric.metric_code
-                                ]
-                                ||
-                                metric.metric_code
-                              }
-                            </td>
-
-
-                            <td
-                              style={{
-                                padding: "10px",
-                              }}
-                            >
-                              {
-                                metric.current_value
-                                ?? "—"
-                              }
-                            </td>
-
-
-                            <td
-                              style={{
-                                padding: "10px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {
-                                metric.condition
-                                ?? "—"
-                              }
-                            </td>
-
-
-                            <td
-                              style={{
-                                padding: "10px",
-                              }}
-                            >
-                              {
+                            {
+                              METRIC_LABELS[
                                 metric
-                                  .percentage_change
-                                != null
-                                  ? `${metric.percentage_change}%`
-                                  : "—"
+                              ]
+                            }
+                          </button>
+
+                        )
+                      )
+                    }
+
+                  </div>
+
+
+                  <div className="history-chart">
+
+                    <ResponsiveContainer
+                      width="100%"
+                      height={380}
+                    >
+
+                      <LineChart
+                        data={
+                          selectedHistory
+                        }
+                      >
+
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="#24344a"
+                        />
+
+                        <XAxis
+                          dataKey="date"
+                          stroke="#64748b"
+                        />
+
+                        <YAxis
+                          stroke="#64748b"
+                          domain={[
+                            "auto",
+                            "auto",
+                          ]}
+                        />
+
+                        <Tooltip
+                          content={
+                            <HistoryTooltip />
+                          }
+                        />
+
+                        <Line
+                          type="monotone"
+                          dataKey="value"
+                          stroke="#3b82f6"
+                          strokeWidth={3}
+                          dot={{
+                            r: 5,
+                          }}
+                          activeDot={{
+                            r: 7,
+                          }}
+                        />
+
+                      </LineChart>
+
+                    </ResponsiveContainer>
+
+                  </div>
+
+                </section>
+
+
+                <section className="section-card">
+
+                  <div className="section-heading">
+
+                    <h2>
+                      Observation History
+                    </h2>
+
+                    <p>
+                      Underlying historical observations for the selected signal.
+                    </p>
+
+                  </div>
+
+
+                  <div className="table-scroll">
+
+                    <table className="data-table">
+
+                      <thead>
+
+                        <tr>
+                          <th>Date</th>
+                          <th>Value</th>
+                          <th>Frequency</th>
+                          <th>Period</th>
+                          <th>Source</th>
+                          <th>Data Quality</th>
+                        </tr>
+
+                      </thead>
+
+
+                      <tbody>
+
+                        {
+                          selectedHistory
+                            .map(
+                              (
+                                observation,
+                                index
+                              ) => (
+
+                                <tr
+                                  key={index}
+                                >
+
+                                  <td>
+                                    {
+                                      observation
+                                        .date
+                                    }
+                                  </td>
+
+                                  <td>
+                                    {
+                                      observation
+                                        .value
+                                    }
+                                  </td>
+
+                                  <td>
+                                    {
+                                      observation
+                                        .reporting_frequency
+                                    }
+                                  </td>
+
+                                  <td>
+                                    {
+                                      observation
+                                        .period_start
+                                    }
+                                    {" → "}
+                                    {
+                                      observation
+                                        .period_end
+                                    }
+                                  </td>
+
+                                  <td>
+                                    {
+                                      observation
+                                        .source
+                                    }
+                                  </td>
+
+                                  <td>
+                                    {
+                                      observation
+                                        .data_quality
+                                    }
+                                  </td>
+
+                                </tr>
+
+                              )
+                            )
+                        }
+
+                      </tbody>
+
+                    </table>
+
+                  </div>
+
+                </section>
+
+              </>
+
+            )
+          }
+
+        </div>
+
+      )}
+
+
+      {/* =================================================
+          ALERTS TAB
+          ================================================= */}
+
+      {activeTab === "alerts" && (
+
+        <div className="borrower-tab-content">
+
+          <section className="section-card">
+
+            <div className="section-heading">
+
+              <h2>
+                Borrower Alerts
+              </h2>
+
+              <p>
+                Active borrower-specific monitoring alerts.
+              </p>
+
+            </div>
+
+
+            {
+              borrower
+                .alerts
+                ?.length > 0
+              ? (
+
+                <div className="borrower-alert-grid">
+
+                  {
+                    borrower
+                      .alerts
+                      .map(
+                        (alert) => (
+
+                          <div
+                            key={
+                              alert
+                                .alert_id
+                            }
+                            className="borrower-alert-card"
+                          >
+
+                            <div>
+
+                              <h3>
+                                {
+                                  alert
+                                    .alert_type
+                                }
+                              </h3>
+
+                              <span>
+                                {
+                                  alert
+                                    .created_at
+                                }
+                              </span>
+
+                            </div>
+
+
+                            <span
+                              className={
+                                `severity-badge ${
+                                  alert
+                                    .severity
+                                    .toLowerCase()
+                                }`
                               }
-                            </td>
-
-
-                            <td
-                              style={{
-                                padding: "10px",
-                              }}
                             >
                               {
-                                metric
-                                  .risk_velocity_30d
-                                != null
-                                  ? `${metric.risk_velocity_30d}%`
-                                  : "—"
+                                alert
+                                  .severity
                               }
-                            </td>
+                            </span>
 
-
-                            <td
-                              style={{
-                                padding: "10px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {metric.direction}
-                            </td>
-
-
-                            <td
-                              style={{
-                                padding: "10px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {
-                                metric
-                                  .acceleration_direction
-                              }
-                            </td>
-
-
-                            <td
-                              style={{
-                                padding: "10px",
-                              }}
-                            >
-                              {metric.persistence}
-                            </td>
-
-                          </tr>
+                          </div>
 
                         )
                       )
                   }
 
-                </tbody>
+                </div>
 
-              </table>
+              ) : (
 
-            </div>
+                <div className="insufficient-state">
 
-          </div>
+                  <h3>
+                    No active alerts
+                  </h3>
 
-        )}
+                  <p>
+                    No borrower-specific alerts are currently available.
+                  </p>
 
-      </div>
+                </div>
 
+              )
+            }
 
-      {/* ================================================= */}
-      {/* ACTIVE ALERTS */}
-      {/* ================================================= */}
+          </section>
 
-      <div
-        style={{
-          backgroundColor: "#1e293b",
-          padding: "20px",
-          borderRadius: "10px",
-        }}
-      >
+        </div>
 
-        <h2>Active Alerts</h2>
-
-        <br />
-
-        {
-          borrower.alerts.length === 0
-            ? (
-
-              <p>
-                No active alerts.
-              </p>
-
-            )
-            : (
-
-              <ul>
-
-                {
-                  borrower.alerts.map(
-                    (alert) => (
-
-                      <li
-                        key={
-                          alert.alert_id
-                        }
-                        style={{
-                          marginBottom: "15px",
-                        }}
-                      >
-
-                        <strong>
-                          {
-                            alert.alert_type
-                          }
-                        </strong>
-
-                        {" — "}
-
-                        {
-                          alert.severity
-                        }
-
-                      </li>
-
-                    )
-                  )
-                }
-
-              </ul>
-
-            )
-        }
-
-      </div>
+      )}
 
     </div>
   );
