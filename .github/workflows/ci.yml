@@ -1,4 +1,4 @@
-﻿name: RiskVision CI
+name: RiskVision CI
 
 on:
   push:
@@ -122,7 +122,13 @@ jobs:
       - name: Static type check
         working-directory: backend
         run: |
-          python -m mypy             type_contracts.py             api_schemas.py             trajectory_engine.pyi             covenant_engine.pyi             portfolio_analytics.pyi             backtest_engine.pyi
+          python -m mypy \
+            type_contracts.py \
+            api_schemas.py \
+            trajectory_engine.pyi \
+            covenant_engine.pyi \
+            portfolio_analytics.pyi \
+            backtest_engine.pyi
 
 
       - name: Run backend test suite
@@ -132,6 +138,24 @@ jobs:
             -s tests \
             -p "test_*.py" \
             -v
+
+
+      - name: Run performance benchmark
+        working-directory: backend
+        run: |
+          python performance_benchmark.py \
+            --quick \
+            --enforce-budgets \
+            --json benchmark_results.json
+
+
+      - name: Upload performance benchmark
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: riskvision-performance-${{ github.sha }}
+          path: backend/benchmark_results.json
+          if-no-files-found: warn
 
 
   frontend:
