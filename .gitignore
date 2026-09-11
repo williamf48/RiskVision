@@ -10,7 +10,6 @@
 !.env.example
 !*.env.example
 
-
 # ==================================================
 # Python
 # ==================================================
@@ -18,22 +17,16 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Virtual environments
 venv/
 .venv/
 env/
 ENV/
-
-# Python package and build files
 build/
 dist/
 *.egg-info/
 .eggs/
 wheels/
 pip-wheel-metadata/
-
-# Test and coverage files
 .pytest_cache/
 .coverage
 .coverage.*
@@ -42,10 +35,7 @@ htmlcov/
 .nox/
 .mypy_cache/
 .ruff_cache/
-
-# Python logs
 *.log
-
 
 # ==================================================
 # React / Vite / Node.js
@@ -53,61 +43,38 @@ htmlcov/
 
 node_modules/
 frontend/node_modules/
-
-# Frontend production builds
 frontend/dist/
 frontend/build/
 dist/
-
-# Vite cache
 .vite/
-
-# npm and package-manager logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-
-# Local npm cache
 .npm/
 
-
 # ==================================================
-# IDE and editor files
+# IDE / OS
 # ==================================================
 
 .vscode/
 .idea/
 *.code-workspace
-
-# Temporary editor files
 *.swp
 *.swo
 *~
 *.tmp
-
-
-# ==================================================
-# Operating-system files
-# ==================================================
-
-# Windows
 Thumbs.db
 Thumbs.db:encryptable
 Desktop.ini
 $RECYCLE.BIN/
-
-# macOS
 .DS_Store
 .AppleDouble
 .LSOverride
-
-# Linux
 .directory
 
-
 # ==================================================
-# Database backups and local database files
+# Database backups / generated local files
 # ==================================================
 
 *.backup
@@ -116,17 +83,15 @@ $RECYCLE.BIN/
 *.sqlite
 *.sqlite3
 *.db
-
-
-# ==================================================
-# Local uploads and generated files
-# ==================================================
-
 uploads/
 temp/
 tmp/
 .cache/
+backend/benchmark_results.json
+benchmark_results.json
 
+# Local working notes that are not project source
+CHATGPT Summary.docx
 
 # ==================================================
 # Security files
@@ -137,5 +102,4 @@ tmp/
 *.crt
 *.p12
 *.pfx
-# Microsoft Office temporary lock files
 ~$*
