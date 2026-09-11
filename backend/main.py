@@ -12,6 +12,16 @@ from trajectory_engine import (
     summarize_portfolio_interventions,
 )
 
+from covenant_engine import (
+    analyze_borrower_covenants,
+    analyze_portfolio_covenants,
+    summarize_portfolio_covenants,
+)
+
+from portfolio_analytics import (
+    analyze_portfolio_concentration,
+)
+
 
 # =========================================================
 # FASTAPI INITIALIZATION
@@ -19,8 +29,11 @@ from trajectory_engine import (
 
 app = FastAPI(
     title="RiskVision API",
-    description="Credit deterioration and intervention intelligence API",
-    version="0.1.0",
+    description=(
+        "Credit deterioration, intervention, covenant "
+        "and portfolio intelligence API"
+    ),
+    version="0.3.0",
 )
 
 
@@ -45,7 +58,8 @@ app.add_middleware(
 def home():
 
     return {
-        "message": "RiskVision API Running"
+        "message": "RiskVision API Running",
+        "version": "0.3.0",
     }
 
 
@@ -57,9 +71,16 @@ def home():
 def get_borrowers():
 
     query = """
-    SELECT *
-    FROM borrowers
-    ORDER BY id
+        SELECT
+            id,
+            borrower_name,
+            sector,
+            loan_amount,
+            created_at
+
+        FROM borrowers
+
+        ORDER BY id
     """
 
     df = pd.read_sql(
@@ -108,16 +129,13 @@ def get_borrower_detail(
         WHERE borrowers.id = :borrower_id
     """)
 
-
     borrower_df = pd.read_sql(
         borrower_query,
         engine,
         params={
-            "borrower_id":
-                borrower_id
+            "borrower_id": borrower_id
         },
     )
-
 
     if borrower_df.empty:
 
@@ -128,7 +146,7 @@ def get_borrower_detail(
 
 
     # -----------------------------------------------------
-    # ACTIVE ALERTS FOR BORROWER
+    # BORROWER ALERTS
     # -----------------------------------------------------
 
     alert_query = text("""
@@ -147,13 +165,11 @@ def get_borrower_detail(
             alerts.id DESC
     """)
 
-
     alerts_df = pd.read_sql(
         alert_query,
         engine,
         params={
-            "borrower_id":
-                borrower_id
+            "borrower_id": borrower_id
         },
     )
 
@@ -184,10 +200,6 @@ def get_borrower_deterioration(
     borrower_id: int,
 ):
 
-    # -----------------------------------------------------
-    # VERIFY BORROWER EXISTS
-    # -----------------------------------------------------
-
     borrower_query = text("""
         SELECT
             id,
@@ -198,14 +210,12 @@ def get_borrower_deterioration(
         WHERE id = :borrower_id
     """)
 
-
     with engine.connect() as conn:
 
         borrower = conn.execute(
             borrower_query,
             {
-                "borrower_id":
-                    borrower_id
+                "borrower_id": borrower_id
             },
         ).mappings().one_or_none()
 
@@ -218,19 +228,10 @@ def get_borrower_deterioration(
         )
 
 
-    # -----------------------------------------------------
-    # RUN DETERIORATION ENGINE
-    # -----------------------------------------------------
-
     result = analyze_borrower(
-        borrower_id=
-            borrower_id
+        borrower_id=borrower_id
     )
 
-
-    # -----------------------------------------------------
-    # ADD BORROWER NAME
-    # -----------------------------------------------------
 
     result["borrower_name"] = (
         borrower[
@@ -251,10 +252,6 @@ def get_borrower_history(
     borrower_id: int,
 ):
 
-    # -----------------------------------------------------
-    # VERIFY BORROWER EXISTS
-    # -----------------------------------------------------
-
     borrower_query = text("""
         SELECT
             id,
@@ -265,14 +262,12 @@ def get_borrower_history(
         WHERE id = :borrower_id
     """)
 
-
     with engine.connect() as conn:
 
         borrower = conn.execute(
             borrower_query,
             {
-                "borrower_id":
-                    borrower_id
+                "borrower_id": borrower_id
             },
         ).mappings().one_or_none()
 
@@ -284,10 +279,6 @@ def get_borrower_history(
             detail="Borrower not found",
         )
 
-
-    # -----------------------------------------------------
-    # LOAD HISTORICAL OBSERVATIONS
-    # -----------------------------------------------------
 
     history_query = text("""
         SELECT
@@ -314,15 +305,10 @@ def get_borrower_history(
         history_query,
         engine,
         params={
-            "borrower_id":
-                borrower_id
+            "borrower_id": borrower_id
         },
     )
 
-
-    # -----------------------------------------------------
-    # BUILD GROUPED METRIC RESPONSE
-    # -----------------------------------------------------
 
     metrics = {}
 
@@ -432,10 +418,6 @@ def get_borrower_history(
         })
 
 
-    # -----------------------------------------------------
-    # RETURN
-    # -----------------------------------------------------
-
     return {
 
         "borrower_id":
@@ -466,6 +448,60 @@ def get_borrower_history(
 
 
 # =========================================================
+# BORROWER COVENANT INTELLIGENCE
+# =========================================================
+
+@app.get("/borrowers/{borrower_id}/covenants")
+def get_borrower_covenants(
+    borrower_id: int,
+):
+
+    borrower_query = text("""
+        SELECT
+            id,
+            borrower_name
+
+        FROM borrowers
+
+        WHERE id = :borrower_id
+    """)
+
+    with engine.connect() as conn:
+
+        borrower = conn.execute(
+            borrower_query,
+            {
+                "borrower_id": borrower_id
+            },
+        ).mappings().one_or_none()
+
+
+    if borrower is None:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Borrower not found",
+        )
+
+
+    result = (
+        analyze_borrower_covenants(
+            borrower_id
+        )
+    )
+
+
+    result["borrower_name"] = (
+        borrower[
+            "borrower_name"
+        ]
+    )
+
+
+    return result
+
+
+# =========================================================
 # INTERVENTION WATCHLIST
 # =========================================================
 
@@ -473,7 +509,7 @@ def get_borrower_history(
 def intervention_watchlist():
     """
     Return entire portfolio ranked by explainable
-    intervention priority.
+    borrower intervention priority.
     """
 
     return analyze_portfolio()
@@ -486,11 +522,62 @@ def intervention_watchlist():
 @app.get("/intervention_summary")
 def intervention_summary():
     """
-    Return portfolio-level intervention counts generated
-    by the deterioration intelligence engine.
+    Return portfolio-level intervention priority counts.
     """
 
-    return summarize_portfolio_interventions()
+    return (
+        summarize_portfolio_interventions()
+    )
+
+
+# =========================================================
+# PORTFOLIO COVENANT WATCHLIST
+# =========================================================
+
+@app.get("/covenant_watchlist")
+def covenant_watchlist():
+    """
+    Return borrowers ranked by covenant-pressure status.
+    """
+
+    return (
+        analyze_portfolio_covenants()
+    )
+
+
+# =========================================================
+# PORTFOLIO COVENANT SUMMARY
+# =========================================================
+
+@app.get("/covenant_summary")
+def covenant_summary():
+    """
+    Return portfolio-level covenant pressure counts.
+    """
+
+    return (
+        summarize_portfolio_covenants()
+    )
+
+
+# =========================================================
+# PORTFOLIO CONCENTRATION ANALYTICS
+# =========================================================
+
+@app.get("/portfolio_analytics")
+def portfolio_analytics():
+    """
+    Return portfolio exposure concentration,
+    sector analytics,
+    intervention concentration,
+    historical coverage,
+    borrower concentration,
+    and covenant-pressure concentration.
+    """
+
+    return (
+        analyze_portfolio_concentration()
+    )
 
 
 # =========================================================
@@ -501,18 +588,18 @@ def intervention_summary():
 def get_risk_scores():
 
     query = """
-    SELECT
-        borrowers.id AS borrower_id,
-        borrowers.borrower_name,
-        risk_scores.score,
-        risk_scores.classification
+        SELECT
+            borrowers.id AS borrower_id,
+            borrowers.borrower_name,
+            risk_scores.score,
+            risk_scores.classification
 
-    FROM borrowers
+        FROM borrowers
 
-    JOIN risk_scores
-        ON borrowers.id = risk_scores.borrower_id
+        JOIN risk_scores
+            ON borrowers.id = risk_scores.borrower_id
 
-    ORDER BY borrowers.id
+        ORDER BY borrowers.id
     """
 
 
@@ -535,22 +622,22 @@ def get_risk_scores():
 def get_alerts():
 
     query = """
-    SELECT
-        alerts.id AS alert_id,
-        borrowers.id AS borrower_id,
-        borrowers.borrower_name,
-        alerts.alert_type,
-        alerts.severity,
-        alerts.created_at
+        SELECT
+            alerts.id AS alert_id,
+            borrowers.id AS borrower_id,
+            borrowers.borrower_name,
+            alerts.alert_type,
+            alerts.severity,
+            alerts.created_at
 
-    FROM alerts
+        FROM alerts
 
-    JOIN borrowers
-        ON borrowers.id = alerts.borrower_id
+        JOIN borrowers
+            ON borrowers.id = alerts.borrower_id
 
-    ORDER BY
-        alerts.created_at DESC,
-        alerts.id DESC
+        ORDER BY
+            alerts.created_at DESC,
+            alerts.id DESC
     """
 
 
@@ -573,68 +660,69 @@ def get_alerts():
 def portfolio_summary():
 
     total_borrowers_query = """
-    SELECT
-        COUNT(*) AS total_borrowers
-    FROM borrowers
+        SELECT
+            COUNT(*) AS total_borrowers
+
+        FROM borrowers
     """
 
 
     total_exposure_query = """
-    SELECT
-        COALESCE(
-            SUM(loan_amount),
-            0
-        ) AS total_exposure
+        SELECT
+            COALESCE(
+                SUM(loan_amount),
+                0
+            ) AS total_exposure
 
-    FROM borrowers
+        FROM borrowers
     """
 
 
     high_risk_query = """
-    SELECT
-        COUNT(*) AS high_risk
+        SELECT
+            COUNT(*) AS high_risk
 
-    FROM risk_scores
+        FROM risk_scores
 
-    WHERE classification = 'High Risk'
+        WHERE classification = 'High Risk'
     """
 
 
     watchlist_query = """
-    SELECT
-        COUNT(*) AS watchlist
+        SELECT
+            COUNT(*) AS watchlist
 
-    FROM risk_scores
+        FROM risk_scores
 
-    WHERE classification = 'Watchlist'
+        WHERE classification = 'Watchlist'
     """
 
 
     low_risk_query = """
-    SELECT
-        COUNT(*) AS low_risk
+        SELECT
+            COUNT(*) AS low_risk
 
-    FROM risk_scores
+        FROM risk_scores
 
-    WHERE classification = 'Low Risk'
+        WHERE classification = 'Low Risk'
     """
 
 
     alerts_query = """
-    SELECT
-        COUNT(*) AS total_alerts
+        SELECT
+            COUNT(*) AS total_alerts
 
-    FROM alerts
+        FROM alerts
     """
 
 
     high_alerts_query = """
-    SELECT
-        COUNT(*) AS high_alerts
+        SELECT
+            COUNT(*) AS high_alerts
 
-    FROM alerts
+        FROM alerts
 
-    WHERE severity = 'HIGH'
+        WHERE severity = 'HIGH'
     """
 
 
@@ -748,27 +836,27 @@ def portfolio_summary():
 def watchlist():
 
     query = """
-    SELECT
-        borrowers.id AS borrower_id,
-        borrowers.borrower_name,
-        risk_scores.score,
-        risk_scores.classification
+        SELECT
+            borrowers.id AS borrower_id,
+            borrowers.borrower_name,
+            risk_scores.score,
+            risk_scores.classification
 
-    FROM borrowers
+        FROM borrowers
 
-    JOIN risk_scores
-        ON borrowers.id = risk_scores.borrower_id
+        JOIN risk_scores
+            ON borrowers.id = risk_scores.borrower_id
 
-    WHERE
-        risk_scores.classification = 'Watchlist'
+        WHERE
+            risk_scores.classification = 'Watchlist'
 
-        OR
+            OR
 
-        risk_scores.classification = 'High Risk'
+            risk_scores.classification = 'High Risk'
 
-    ORDER BY
-        risk_scores.score DESC,
-        borrowers.id
+        ORDER BY
+            risk_scores.score DESC,
+            borrowers.id
     """
 
 
@@ -791,22 +879,22 @@ def watchlist():
 def top_risk_accounts():
 
     query = """
-    SELECT
-        borrowers.id AS borrower_id,
-        borrowers.borrower_name,
-        risk_scores.score,
-        risk_scores.classification
+        SELECT
+            borrowers.id AS borrower_id,
+            borrowers.borrower_name,
+            risk_scores.score,
+            risk_scores.classification
 
-    FROM borrowers
+        FROM borrowers
 
-    JOIN risk_scores
-        ON borrowers.id = risk_scores.borrower_id
+        JOIN risk_scores
+            ON borrowers.id = risk_scores.borrower_id
 
-    ORDER BY
-        risk_scores.score DESC,
-        borrowers.id
+        ORDER BY
+            risk_scores.score DESC,
+            borrowers.id
 
-    LIMIT 10
+        LIMIT 10
     """
 
 
@@ -829,24 +917,24 @@ def top_risk_accounts():
 def high_alerts():
 
     query = """
-    SELECT
-        alerts.id AS alert_id,
-        borrowers.id AS borrower_id,
-        borrowers.borrower_name,
-        alerts.alert_type,
-        alerts.severity,
-        alerts.created_at
+        SELECT
+            alerts.id AS alert_id,
+            borrowers.id AS borrower_id,
+            borrowers.borrower_name,
+            alerts.alert_type,
+            alerts.severity,
+            alerts.created_at
 
-    FROM alerts
+        FROM alerts
 
-    JOIN borrowers
-        ON borrowers.id = alerts.borrower_id
+        JOIN borrowers
+            ON borrowers.id = alerts.borrower_id
 
-    WHERE alerts.severity = 'HIGH'
+        WHERE alerts.severity = 'HIGH'
 
-    ORDER BY
-        alerts.created_at DESC,
-        alerts.id DESC
+        ORDER BY
+            alerts.created_at DESC,
+            alerts.id DESC
     """
 
 
@@ -858,4 +946,20 @@ def high_alerts():
 
     return df.to_dict(
         orient="records"
+    )
+
+
+# =========================================================
+# RUN DIRECTLY
+# =========================================================
+
+if __name__ == "__main__":
+
+    import uvicorn
+
+    uvicorn.run(
+        "main:app",
+        host="127.0.0.1",
+        port=8000,
+        reload=True,
     )

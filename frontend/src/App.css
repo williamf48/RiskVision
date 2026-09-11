@@ -2272,3 +2272,365 @@ outer visual layer where appropriate.
   }
 
 }
+/* ======================================================
+   PORTFOLIO COVENANT ANALYTICS
+   ====================================================== */
+
+.covenant-portfolio-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+
+.covenant-portfolio-summary {
+  display: grid;
+
+  grid-template-columns:
+    repeat(6, minmax(0, 1fr));
+
+  gap: 10px;
+
+  margin-bottom: 20px;
+}
+
+
+.covenant-portfolio-summary > div {
+  padding: 14px;
+
+  text-align: center;
+
+  background: #0c1727;
+
+  border: 1px solid #1e2c40;
+
+  border-radius: 8px;
+}
+
+
+.covenant-portfolio-summary span {
+  display: block;
+
+  color: #64748b;
+
+  font-size: 9px;
+
+  text-transform: uppercase;
+}
+
+
+.covenant-portfolio-summary strong {
+  display: block;
+
+  margin-top: 7px;
+
+  font-size: 18px;
+}
+
+
+/* ======================================================
+   LIVE REPORTING
+   ====================================================== */
+
+.report-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-bottom: 18px;
+}
+
+
+.report-kpi-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+
+  gap: 12px;
+
+  margin-bottom: 18px;
+}
+
+
+.report-kpi-card {
+  padding: 18px;
+
+  background: #111d2e;
+
+  border: 1px solid #1e2c40;
+
+  border-radius: 10px;
+}
+
+
+.report-kpi-card span {
+  display: block;
+
+  color: #64748b;
+
+  font-size: 9px;
+
+  text-transform: uppercase;
+}
+
+
+.report-kpi-card strong {
+  display: block;
+
+  margin-top: 8px;
+
+  font-size: 21px;
+}
+
+
+.report-section-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
+
+  margin-bottom: 18px;
+}
+
+
+.report-stat-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 9px;
+}
+
+
+.report-stat-list > div {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 11px 12px;
+
+  background: #0c1727;
+
+  border: 1px solid #1e2c40;
+
+  border-radius: 7px;
+}
+
+
+.report-stat-list span {
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+
+.report-stat-list strong {
+  font-size: 15px;
+}
+
+
+@media (
+  max-width: 1100px
+) {
+
+  .covenant-portfolio-summary {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+
+  .report-kpi-grid {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+}
+
+
+@media (
+  max-width: 750px
+) {
+
+  .report-section-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .report-kpi-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+
+  .covenant-portfolio-summary {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+}
+/* ======================================================
+   PORTFOLIO ANALYTICS
+   ====================================================== */
+
+.analytics-kpi-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(6, minmax(0, 1fr));
+
+  gap: 10px;
+
+  margin-bottom: 20px;
+}
+
+
+.analytics-kpi-grid > div {
+  padding: 15px;
+
+  background: #0c1727;
+
+  border:
+    1px solid #1e2c40;
+
+  border-radius: 8px;
+}
+
+
+.analytics-kpi-grid span {
+  display: block;
+
+  color: #64748b;
+
+  font-size: 9px;
+
+  text-transform: uppercase;
+}
+
+
+.analytics-kpi-grid strong {
+  display: block;
+
+  margin-top: 8px;
+
+  font-size: 18px;
+}
+
+
+.analytics-kpi-grid small {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #64748b;
+
+  font-size: 9px;
+}
+
+
+.analytics-chart-card {
+  margin-bottom: 20px;
+
+  padding: 18px;
+
+  background: #0c1727;
+
+  border:
+    1px solid #1e2c40;
+
+  border-radius: 9px;
+}
+
+
+.analytics-tabs {
+  display: flex;
+
+  gap: 8px;
+
+  margin-bottom: 15px;
+
+  padding-bottom: 10px;
+
+  border-bottom:
+    1px solid #1e2c40;
+}
+
+
+.analytics-tab {
+  padding: 8px 13px;
+
+  color: #94a3b8;
+
+  background: transparent;
+
+  border: none;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  font-weight: 700;
+}
+
+
+.analytics-tab:hover {
+  color: white;
+
+  background: #16243a;
+}
+
+
+.analytics-tab.active {
+  color: #93c5fd;
+
+  background: #1e3a5f;
+}
+
+
+.analytics-toolbar {
+  display: flex;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  margin-bottom: 12px;
+
+  color: #64748b;
+
+  font-size: 10px;
+}
+
+
+@media (
+  max-width: 1200px
+) {
+
+  .analytics-kpi-grid {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+}
+
+
+@media (
+  max-width: 700px
+) {
+
+  .analytics-kpi-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+}

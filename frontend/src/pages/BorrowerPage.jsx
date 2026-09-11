@@ -29,7 +29,6 @@ const METRIC_ORDER = [
 
 
 function formatBoolean(value) {
-
   if (value === true) {
     return "Yes";
   }
@@ -47,7 +46,6 @@ function HistoryTooltip({
   payload,
   label,
 }) {
-
   if (
     !active ||
     !payload ||
@@ -89,7 +87,7 @@ function HistoryTooltip({
       </p>
 
       <p>
-        Data quality:{" "}
+        Data Quality:{" "}
         {
           observation.data_quality
           || "—"
@@ -102,24 +100,30 @@ function HistoryTooltip({
 
 
 function BorrowerPage() {
-
   const { id } = useParams();
 
 
   const [borrower, setBorrower] =
     useState(null);
 
-  const [deterioration, setDeterioration] =
-    useState(null);
+  const [
+    deterioration,
+    setDeterioration,
+  ] = useState(null);
 
   const [history, setHistory] =
+    useState(null);
+
+  const [covenants, setCovenants] =
     useState(null);
 
   const [activeTab, setActiveTab] =
     useState("overview");
 
-  const [selectedMetric, setSelectedMetric] =
-    useState("DSCR");
+  const [
+    selectedMetric,
+    setSelectedMetric,
+  ] = useState("DSCR");
 
   const [loading, setLoading] =
     useState(true);
@@ -133,7 +137,6 @@ function BorrowerPage() {
   // =====================================================
 
   useEffect(() => {
-
     setLoading(true);
     setError(null);
 
@@ -142,11 +145,17 @@ function BorrowerPage() {
       fetch(
         `http://127.0.0.1:8000/borrowers/${id}`
       ),
+
       fetch(
         `http://127.0.0.1:8000/borrowers/${id}/deterioration`
       ),
+
       fetch(
         `http://127.0.0.1:8000/borrowers/${id}/history`
+      ),
+
+      fetch(
+        `http://127.0.0.1:8000/borrowers/${id}/covenants`
       ),
     ])
 
@@ -155,6 +164,7 @@ function BorrowerPage() {
           borrowerResponse,
           deteriorationResponse,
           historyResponse,
+          covenantResponse,
         ]
       ) => {
 
@@ -164,15 +174,24 @@ function BorrowerPage() {
           );
         }
 
+
         if (!deteriorationResponse.ok) {
           throw new Error(
             "Deterioration intelligence could not be loaded"
           );
         }
 
+
         if (!historyResponse.ok) {
           throw new Error(
             "Historical observations could not be loaded"
+          );
+        }
+
+
+        if (!covenantResponse.ok) {
+          throw new Error(
+            "Covenant intelligence could not be loaded"
           );
         }
 
@@ -186,11 +205,13 @@ function BorrowerPage() {
 
           history:
             await historyResponse.json(),
+
+          covenants:
+            await covenantResponse.json(),
         };
       })
 
       .then((data) => {
-
         setBorrower(
           data.borrower
         );
@@ -203,21 +224,26 @@ function BorrowerPage() {
           data.history
         );
 
+        setCovenants(
+          data.covenants
+        );
+
 
         const availableMetrics =
           METRIC_ORDER.filter(
             (metric) =>
-              data.history.metrics?.[metric]
+              data.history
+                .metrics?.[metric]
                 ?.length > 0
           );
 
 
-        if (availableMetrics.length > 0) {
-
+        if (
+          availableMetrics.length > 0
+        ) {
           setSelectedMetric(
             availableMetrics[0]
           );
-
         }
 
 
@@ -225,7 +251,6 @@ function BorrowerPage() {
       })
 
       .catch((error) => {
-
         console.error(
           "Borrower page error:",
           error
@@ -245,50 +270,54 @@ function BorrowerPage() {
   // HISTORY
   // =====================================================
 
-  const availableMetrics = useMemo(() => {
+  const availableMetrics =
+    useMemo(() => {
 
-    if (!history) {
-      return [];
-    }
-
-
-    return METRIC_ORDER.filter(
-      (metric) =>
-        history.metrics?.[metric]
-          ?.length > 0
-    );
-
-  }, [history]);
+      if (!history) {
+        return [];
+      }
 
 
-  const selectedHistory = useMemo(() => {
+      return METRIC_ORDER.filter(
+        (metric) =>
+          history
+            .metrics?.[metric]
+            ?.length > 0
+      );
 
-    if (
-      !history ||
-      !selectedMetric
-    ) {
-      return [];
-    }
+    }, [history]);
 
 
-    return (
-      history.metrics?.[
-        selectedMetric
-      ] || []
-    );
+  const selectedHistory =
+    useMemo(() => {
 
-  }, [
-    history,
-    selectedMetric,
-  ]);
+      if (
+        !history ||
+        !selectedMetric
+      ) {
+        return [];
+      }
+
+
+      return (
+        history
+          .metrics?.[
+            selectedMetric
+          ]
+        || []
+      );
+
+    }, [
+      history,
+      selectedMetric,
+    ]);
 
 
   // =====================================================
-  // LOADING / ERROR
+  // LOADING
   // =====================================================
 
   if (loading) {
-
     return (
       <div className="page">
 
@@ -301,12 +330,15 @@ function BorrowerPage() {
   }
 
 
+  // =====================================================
+  // ERROR
+  // =====================================================
+
   if (
     error ||
     !borrower ||
     !deterioration
   ) {
-
     return (
       <div className="page">
 
@@ -353,54 +385,52 @@ function BorrowerPage() {
 
       <div className="borrower-page-header">
 
-        <div>
-
-          <Link
-            to="/borrowers"
-            className="back-link"
-          >
-            ← Borrower Directory
-          </Link>
+        <Link
+          to="/borrowers"
+          className="back-link"
+        >
+          ← Borrower Directory
+        </Link>
 
 
-          <div className="borrower-title-row">
+        <div className="borrower-title-row">
 
-            <div>
+          <div>
 
-              <h1>
-                {
-                  borrower
-                    .borrower_name
-                }
-              </h1>
-
-              <p>
-                {
-                  borrower.sector
-                  || "Sector unavailable"
-                }
-                {" · Borrower ID "}
-                {
-                  borrower
-                    .borrower_id
-                }
-              </p>
-
-            </div>
-
-
-            <span
-              className={
-                `priority-badge large ${
-                  priority
-                    .toLowerCase()
-                }`
+            <h1>
+              {
+                borrower
+                  .borrower_name
               }
-            >
-              {priority}
-            </span>
+            </h1>
+
+            <p>
+              {
+                borrower.sector
+                || "Sector unavailable"
+              }
+
+              {" · Borrower ID "}
+
+              {
+                borrower
+                  .borrower_id
+              }
+            </p>
 
           </div>
+
+
+          <span
+            className={
+              `priority-badge large ${
+                priority
+                  .toLowerCase()
+              }`
+            }
+          >
+            {priority}
+          </span>
 
         </div>
 
@@ -536,6 +566,29 @@ function BorrowerPage() {
 
         <button
           className={
+            activeTab === "covenants"
+              ? "borrower-tab active"
+              : "borrower-tab"
+          }
+          onClick={() =>
+            setActiveTab(
+              "covenants"
+            )
+          }
+        >
+          Covenants
+          {" ("}
+          {
+            covenants
+              ?.covenants_analyzed
+            || 0
+          }
+          {")"}
+        </button>
+
+
+        <button
+          className={
             activeTab === "alerts"
               ? "borrower-tab active"
               : "borrower-tab"
@@ -551,7 +604,8 @@ function BorrowerPage() {
           {
             borrower
               .alerts
-              ?.length || 0
+              ?.length
+            || 0
           }
           {")"}
         </button>
@@ -560,7 +614,7 @@ function BorrowerPage() {
 
 
       {/* =================================================
-          OVERVIEW TAB
+          OVERVIEW
           ================================================= */}
 
       {activeTab === "overview" && (
@@ -587,7 +641,10 @@ function BorrowerPage() {
               <div className="detail-grid">
 
                 <div>
-                  <span>Borrower ID</span>
+                  <span>
+                    Borrower ID
+                  </span>
+
                   <strong>
                     {
                       borrower
@@ -596,8 +653,12 @@ function BorrowerPage() {
                   </strong>
                 </div>
 
+
                 <div>
-                  <span>Sector</span>
+                  <span>
+                    Sector
+                  </span>
+
                   <strong>
                     {
                       borrower.sector
@@ -606,8 +667,12 @@ function BorrowerPage() {
                   </strong>
                 </div>
 
+
                 <div>
-                  <span>Exposure</span>
+                  <span>
+                    Exposure
+                  </span>
+
                   <strong>
                     ₹
                     {
@@ -618,8 +683,12 @@ function BorrowerPage() {
                   </strong>
                 </div>
 
+
                 <div>
-                  <span>Risk Score</span>
+                  <span>
+                    Risk Score
+                  </span>
+
                   <strong>
                     {
                       borrower.score
@@ -651,7 +720,10 @@ function BorrowerPage() {
               <div className="detail-grid">
 
                 <div>
-                  <span>DPD</span>
+                  <span>
+                    DPD
+                  </span>
+
                   <strong>
                     {
                       borrower.dpd
@@ -660,8 +732,12 @@ function BorrowerPage() {
                   </strong>
                 </div>
 
+
                 <div>
-                  <span>DSCR</span>
+                  <span>
+                    DSCR
+                  </span>
+
                   <strong>
                     {
                       borrower.dscr
@@ -670,8 +746,12 @@ function BorrowerPage() {
                   </strong>
                 </div>
 
+
                 <div>
-                  <span>Revenue Decline</span>
+                  <span>
+                    Revenue Decline
+                  </span>
+
                   <strong>
                     {
                       borrower
@@ -682,8 +762,12 @@ function BorrowerPage() {
                   </strong>
                 </div>
 
+
                 <div>
-                  <span>Cash Flow</span>
+                  <span>
+                    Cash Flow
+                  </span>
+
                   <strong>
                     {
                       borrower
@@ -693,8 +777,12 @@ function BorrowerPage() {
                   </strong>
                 </div>
 
+
                 <div>
-                  <span>Restructured</span>
+                  <span>
+                    Restructured
+                  </span>
+
                   <strong>
                     {
                       formatBoolean(
@@ -712,7 +800,7 @@ function BorrowerPage() {
           </div>
 
 
-          <section className="section-card borrower-intervention-summary">
+          <section className="section-card">
 
             <div className="section-heading">
 
@@ -727,123 +815,117 @@ function BorrowerPage() {
             </div>
 
 
-            {priority ===
-            "INSUFFICIENT_DATA" ? (
+            {
+              priority
+              === "INSUFFICIENT_DATA"
+              ? (
 
-              <div className="insufficient-state">
+                <div className="insufficient-state">
 
-                <h3>
-                  Insufficient historical data
-                </h3>
+                  <h3>
+                    Insufficient historical data
+                  </h3>
 
-                <p>
-                  RiskVision currently has{" "}
-                  {
-                    deterioration
-                      .metrics_analyzed
-                  }
-                  {" of "}
-                  {
-                    deterioration
-                      .configured_metrics
-                  }
-                  {" historical signals available for trajectory analysis."}
-                </p>
-
-              </div>
-
-            ) : (
-
-              <div className="intervention-overview-grid">
-
-                <div>
-
-                  <span>
-                    Priority Rank
-                  </span>
-
-                  <strong>
-                    {
-                      deterioration
-                        .priority_rank
-                    }
-                  </strong>
-
-                </div>
-
-
-                <div>
-
-                  <span>
-                    Deteriorating
-                  </span>
-
-                  <strong>
-                    {
-                      deterioration
-                        .deteriorating_signals
-                    }
-                    /
+                  <p>
+                    RiskVision currently has{" "}
                     {
                       deterioration
                         .metrics_analyzed
                     }
-                  </strong>
-
-                </div>
-
-
-                <div>
-
-                  <span>
-                    Persistent
-                  </span>
-
-                  <strong>
+                    {" of "}
                     {
                       deterioration
-                        .persistent_deterioration_signals
+                        .configured_metrics
                     }
-                  </strong>
+                    {" historical signals available for trajectory analysis."}
+                  </p>
 
                 </div>
 
+              )
+              : (
 
-                <div>
+                <div className="intervention-overview-grid">
 
-                  <span>
-                    Accelerating
-                  </span>
+                  <div>
+                    <span>
+                      Priority Rank
+                    </span>
 
-                  <strong>
-                    {
-                      deterioration
-                        .accelerating_deterioration_signals
-                    }
-                  </strong>
+                    <strong>
+                      {
+                        deterioration
+                          .priority_rank
+                      }
+                    </strong>
+                  </div>
+
+
+                  <div>
+                    <span>
+                      Deteriorating
+                    </span>
+
+                    <strong>
+                      {
+                        deterioration
+                          .deteriorating_signals
+                      }
+                      /
+                      {
+                        deterioration
+                          .metrics_analyzed
+                      }
+                    </strong>
+                  </div>
+
+
+                  <div>
+                    <span>
+                      Persistent
+                    </span>
+
+                    <strong>
+                      {
+                        deterioration
+                          .persistent_deterioration_signals
+                      }
+                    </strong>
+                  </div>
+
+
+                  <div>
+                    <span>
+                      Accelerating
+                    </span>
+
+                    <strong>
+                      {
+                        deterioration
+                          .accelerating_deterioration_signals
+                      }
+                    </strong>
+                  </div>
+
+
+                  <div>
+                    <span>
+                      Convergence
+                    </span>
+
+                    <strong>
+                      {
+                        deterioration
+                          .convergence_percentage
+                      }
+                      %
+                    </strong>
+                  </div>
 
                 </div>
 
-
-                <div>
-
-                  <span>
-                    Convergence
-                  </span>
-
-                  <strong>
-                    {
-                      deterioration
-                        .convergence_percentage
-                    }
-                    %
-                  </strong>
-
-                </div>
-
-              </div>
-
-            )}
+              )
+            }
 
           </section>
 
@@ -853,7 +935,7 @@ function BorrowerPage() {
 
 
       {/* =================================================
-          DETERIORATION TAB
+          DETERIORATION
           ================================================= */}
 
       {activeTab === "deterioration" && (
@@ -913,9 +995,7 @@ function BorrowerPage() {
                             <li
                               key={index}
                             >
-                              {
-                                explanation
-                              }
+                              {explanation}
                             </li>
 
                           )
@@ -956,9 +1036,7 @@ function BorrowerPage() {
                             <li
                               key={index}
                             >
-                              {
-                                recommendation
-                              }
+                              {recommendation}
                             </li>
 
                           )
@@ -1034,6 +1112,7 @@ function BorrowerPage() {
                                   }
                                 </td>
 
+
                                 <td>
                                   {
                                     metric
@@ -1042,12 +1121,14 @@ function BorrowerPage() {
                                   }
                                 </td>
 
+
                                 <td>
                                   {
                                     metric
                                       .condition
                                   }
                                 </td>
+
 
                                 <td>
                                   {
@@ -1059,6 +1140,7 @@ function BorrowerPage() {
                                   }
                                 </td>
 
+
                                 <td>
                                   {
                                     metric
@@ -1069,6 +1151,7 @@ function BorrowerPage() {
                                   }
                                 </td>
 
+
                                 <td>
                                   {
                                     metric
@@ -1076,12 +1159,14 @@ function BorrowerPage() {
                                   }
                                 </td>
 
+
                                 <td>
                                   {
                                     metric
                                       .acceleration_direction
                                   }
                                 </td>
+
 
                                 <td>
                                   {
@@ -1114,7 +1199,7 @@ function BorrowerPage() {
 
 
       {/* =================================================
-          HISTORY TAB
+          HISTORY
           ================================================= */}
 
       {activeTab === "history" && (
@@ -1123,7 +1208,8 @@ function BorrowerPage() {
 
           {
             history
-              ?.observation_count === 0
+              ?.observation_count
+            === 0
             ? (
 
               <section className="section-card">
@@ -1142,7 +1228,8 @@ function BorrowerPage() {
 
               </section>
 
-            ) : (
+            )
+            : (
 
               <>
 
@@ -1169,11 +1256,14 @@ function BorrowerPage() {
                         history
                           .observation_count
                       }
+
                       {" observations · "}
+
                       {
                         history
                           .metric_count
                       }
+
                       {" metrics"}
 
                     </div>
@@ -1190,7 +1280,8 @@ function BorrowerPage() {
                           <button
                             key={metric}
                             className={
-                              selectedMetric === metric
+                              selectedMetric
+                              === metric
                                 ? "metric-button active"
                                 : "metric-button"
                             }
@@ -1327,12 +1418,14 @@ function BorrowerPage() {
                                     }
                                   </td>
 
+
                                   <td>
                                     {
                                       observation
                                         .value
                                     }
                                   </td>
+
 
                                   <td>
                                     {
@@ -1341,17 +1434,23 @@ function BorrowerPage() {
                                     }
                                   </td>
 
+
                                   <td>
                                     {
                                       observation
                                         .period_start
+                                      || "—"
                                     }
+
                                     {" → "}
+
                                     {
                                       observation
                                         .period_end
+                                      || "—"
                                     }
                                   </td>
+
 
                                   <td>
                                     {
@@ -1359,6 +1458,7 @@ function BorrowerPage() {
                                         .source
                                     }
                                   </td>
+
 
                                   <td>
                                     {
@@ -1392,7 +1492,460 @@ function BorrowerPage() {
 
 
       {/* =================================================
-          ALERTS TAB
+          COVENANTS
+          ================================================= */}
+
+      {activeTab === "covenants" && (
+
+        <div className="borrower-tab-content">
+
+          <section className="section-card">
+
+            <div className="covenant-heading-row">
+
+              <div className="section-heading">
+
+                <h2>
+                  Covenant Intelligence
+                </h2>
+
+                <p>
+                  Facility covenant compliance, headroom and upcoming testing requirements.
+                </p>
+
+              </div>
+
+
+              <span
+                className={
+                  `covenant-status-badge ${
+                    covenants
+                      ?.covenant_pressure_status
+                      ?.toLowerCase()
+                    || "no_test"
+                  }`
+                }
+              >
+                {
+                  covenants
+                    ?.covenant_pressure_status
+                  || "NO_COVENANTS"
+                }
+              </span>
+
+            </div>
+
+
+            <div className="covenant-summary-grid">
+
+              <div>
+
+                <span>
+                  Breached
+                </span>
+
+                <strong>
+                  {
+                    covenants
+                      ?.breached_covenants
+                    || 0
+                  }
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Near Breach
+                </span>
+
+                <strong>
+                  {
+                    covenants
+                      ?.near_breach_covenants
+                    || 0
+                  }
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Tight
+                </span>
+
+                <strong>
+                  {
+                    covenants
+                      ?.tight_covenants
+                    || 0
+                  }
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Healthy
+                </span>
+
+                <strong>
+                  {
+                    covenants
+                      ?.healthy_covenants
+                    || 0
+                  }
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Untested
+                </span>
+
+                <strong>
+                  {
+                    covenants
+                      ?.untested_covenants
+                    || 0
+                  }
+                </strong>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          {
+            covenants
+              ?.covenants
+              ?.length > 0
+            ? (
+
+              <div className="covenant-list">
+
+                {
+                  covenants
+                    .covenants
+                    .map(
+                      (covenant) => (
+
+                        <section
+                          key={
+                            covenant
+                              .covenant_id
+                          }
+                          className="section-card covenant-card"
+                        >
+
+                          <div className="covenant-card-header">
+
+                            <div>
+
+                              <span className="covenant-code">
+                                {
+                                  covenant
+                                    .covenant_code
+                                }
+                              </span>
+
+                              <h3>
+                                {
+                                  covenant
+                                    .covenant_name
+                                }
+                              </h3>
+
+                              <p>
+                                {
+                                  covenant
+                                    .facility_name
+                                }
+                              </p>
+
+                            </div>
+
+
+                            <span
+                              className={
+                                `covenant-status-badge ${
+                                  covenant
+                                    .test_status
+                                    ?.toLowerCase()
+                                  || "no_test"
+                                }`
+                              }
+                            >
+                              {
+                                covenant
+                                  .test_status
+                                || "NO_TEST"
+                              }
+                            </span>
+
+                          </div>
+
+
+                          <div className="covenant-metric-grid">
+
+                            <div>
+
+                              <span>
+                                Metric
+                              </span>
+
+                              <strong>
+                                {
+                                  covenant
+                                    .metric_code
+                                }
+                              </strong>
+
+                            </div>
+
+
+                            <div>
+
+                              <span>
+                                Requirement
+                              </span>
+
+                              <strong>
+
+                                {
+                                  covenant
+                                    .threshold_direction
+                                  === "MINIMUM"
+                                    ? "≥"
+                                    : "≤"
+                                }
+
+                                {" "}
+
+                                {
+                                  covenant
+                                    .threshold_value
+                                }
+
+                              </strong>
+
+                            </div>
+
+
+                            <div>
+
+                              <span>
+                                Latest Actual
+                              </span>
+
+                              <strong>
+                                {
+                                  covenant
+                                    .actual_value
+                                  ?? "Not tested"
+                                }
+                              </strong>
+
+                            </div>
+
+
+                            <div>
+
+                              <span>
+                                Headroom
+                              </span>
+
+                              <strong>
+                                {
+                                  covenant
+                                    .headroom_percentage
+                                  !== null
+                                  &&
+                                  covenant
+                                    .headroom_percentage
+                                  !== undefined
+
+                                    ? `${covenant.headroom_percentage}%`
+
+                                    : "—"
+                                }
+                              </strong>
+
+                            </div>
+
+
+                            <div>
+
+                              <span>
+                                Last Test
+                              </span>
+
+                              <strong>
+                                {
+                                  covenant
+                                    .test_date
+                                  || "—"
+                                }
+                              </strong>
+
+                            </div>
+
+
+                            <div>
+
+                              <span>
+                                Next Test
+                              </span>
+
+                              <strong>
+                                {
+                                  covenant
+                                    .next_test_date
+                                  || "—"
+                                }
+                              </strong>
+
+                            </div>
+
+                          </div>
+
+
+                          <div className="facility-strip">
+
+                            <div>
+
+                              <span>
+                                Facility
+                              </span>
+
+                              <strong>
+                                {
+                                  covenant
+                                    .facility_code
+                                }
+                              </strong>
+
+                            </div>
+
+
+                            <div>
+
+                              <span>
+                                Type
+                              </span>
+
+                              <strong>
+                                {
+                                  covenant
+                                    .facility_type
+                                }
+                              </strong>
+
+                            </div>
+
+
+                            <div>
+
+                              <span>
+                                Sanctioned
+                              </span>
+
+                              <strong>
+                                ₹
+                                {
+                                  covenant
+                                    .sanctioned_amount
+                                }
+                                {" Cr"}
+                              </strong>
+
+                            </div>
+
+
+                            <div>
+
+                              <span>
+                                Outstanding
+                              </span>
+
+                              <strong>
+                                ₹
+                                {
+                                  covenant
+                                    .outstanding_amount
+                                  ?? "—"
+                                }
+                                {" Cr"}
+                              </strong>
+
+                            </div>
+
+
+                            <div>
+
+                              <span>
+                                Frequency
+                              </span>
+
+                              <strong>
+                                {
+                                  covenant
+                                    .testing_frequency
+                                }
+                              </strong>
+
+                            </div>
+
+                          </div>
+
+                        </section>
+
+                      )
+                    )
+                }
+
+              </div>
+
+            )
+            : (
+
+              <section className="section-card">
+
+                <div className="insufficient-state">
+
+                  <h2>
+                    No covenant information
+                  </h2>
+
+                  <p>
+                    No active facility covenants are currently configured for this borrower.
+                  </p>
+
+                </div>
+
+              </section>
+
+            )
+          }
+
+        </div>
+
+      )}
+
+
+      {/* =================================================
+          ALERTS
           ================================================= */}
 
       {activeTab === "alerts" && (
@@ -1408,7 +1961,7 @@ function BorrowerPage() {
               </h2>
 
               <p>
-                Active borrower-specific monitoring alerts.
+                Borrower-specific monitoring alerts.
               </p>
 
             </div>
@@ -1478,7 +2031,8 @@ function BorrowerPage() {
 
                 </div>
 
-              ) : (
+              )
+              : (
 
                 <div className="insufficient-state">
 

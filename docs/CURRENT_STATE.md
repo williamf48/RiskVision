@@ -795,3 +795,89 @@ Validation:
 - Vite reported only a non-blocking bundle-size warning
 
 The current deterioration and intervention framework remains transparent MVP heuristic logic using synthetic development thresholds. It is not a probability-of-default model, automated lending decision, or institutionally validated credit-policy framework.
+
+## Covenant and Portfolio Analytics Intelligence - 11 September 2026
+
+RiskVision was extended from borrower deterioration monitoring into a broader credit intelligence workspace covering covenant pressure, portfolio concentration and live reporting.
+
+### Covenant intelligence
+- Added facilities, covenants and covenant_tests data architecture.
+- Added database migration: backend/migrations/003_create_facility_covenant_tables.py.
+- Added synthetic facility and covenant seed data: backend/seeds/003_seed_facilities_covenants.py.
+- Added backend covenant engine supporting borrower-level and portfolio-level covenant monitoring.
+- Covenant states: BREACHED, NEAR_BREACH, TIGHT, HEALTHY and INSUFFICIENT_DATA.
+- Added borrower covenant analysis including threshold, actual value, headroom, testing frequency, last/next test dates and facility information.
+- Added GET /borrowers/{borrower_id}/covenants.
+- Added GET /covenant_watchlist.
+- Added GET /covenant_summary.
+
+Current synthetic covenant validation:
+- Falcon Realty Ltd -> BREACHED.
+- Crest Realty Pvt Ltd -> BREACHED.
+- Nova Energy Ltd -> TIGHT.
+- Alpha Manufacturing Ltd -> HEALTHY.
+- Beta Logistics Pvt Ltd -> HEALTHY.
+- Orion Power Projects Ltd -> INSUFFICIENT_DATA.
+- Borrowers with covenants: 6.
+- Borrowers under covenant pressure: 3.
+- Total covenants: 12.
+- Breached covenants: 2.
+- Near-breach covenants: 1.
+- Tight covenants: 1.
+- Healthy covenants: 6.
+- Untested covenants: 2.
+
+### Borrower workspace
+- Added Covenants as a fifth borrower intelligence tab alongside Overview, Deterioration, History and Alerts.
+- Borrower covenant views show covenant status, facility details, threshold requirements, actual values, headroom and testing schedule.
+- Insufficient historical covenant data remains explicitly separated from healthy compliance.
+
+### Portfolio covenant pressure
+- Added interactive Covenant Pressure panel to the Portfolio workspace.
+- Added covenant-state filtering and borrower-level drill-down.
+- Portfolio covenant monitoring now displays breached, near-breach, tight, healthy and untested counts.
+
+### Portfolio concentration analytics
+- Added backend/portfolio_analytics.py.
+- Added GET /portfolio_analytics.
+- Added sector exposure aggregation and portfolio exposure shares.
+- Added actionable exposure analysis.
+- Added historical-data coverage by sector.
+- Added covenant-pressure concentration by sector.
+- Added largest-borrower and top-five borrower exposure concentration.
+- Added borrower and sector Herfindahl-Hirschman concentration indices.
+
+Current synthetic portfolio analytics:
+- Total borrowers: 25.
+- Total exposure: INR 1,056 Cr.
+- Sectors represented: 18.
+- Historically assessable borrowers: 5.
+- Historical coverage: 20.0%.
+- Actionable exposure: INR 180 Cr.
+- Actionable exposure share: 17.05%.
+- Largest borrower exposure share: 8.33%.
+- Top-five borrower exposure share: 35.13%.
+- Borrower exposure HHI: 489.42.
+- Sector exposure HHI: 789.95.
+
+### Interactive portfolio analytics UI
+- Added Portfolio Analytics panel.
+- Added sector exposure visualization.
+- Added Sector Analysis and Largest Exposures interactive views.
+- Added sorting by exposure, actionable borrowers, historical coverage and covenant pressure.
+- Added borrower drill-down links from portfolio analytics.
+
+### Reporting workspace
+- Replaced the Reports placeholder with a live portfolio reporting workspace.
+- Reports now combine portfolio summary, intervention summary, covenant summary, intervention watchlist and covenant watchlist.
+- Added Intervention CSV export.
+- Added full JSON report export.
+
+### Regression validation
+- Deterioration engine retains 1 URGENT, 1 HIGH, 2 MEDIUM, 1 LOW and 20 INSUFFICIENT_DATA borrowers.
+- Actionable borrowers remain 4 and historically assessable borrowers remain 5.
+- Covenant portfolio summary and portfolio concentration analytics passed direct backend regression checks.
+
+Important limitation:
+- Current covenant thresholds, facilities, historical observations and portfolio results use synthetic development data.
+- Intervention priorities and covenant-pressure classifications use transparent MVP heuristic logic and are not institutionally validated credit-policy decisions or probability-of-default estimates.

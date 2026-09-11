@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 import Header from "../components/Header";
+import CovenantPressurePanel from "../components/CovenantPressurePanel";
+import PortfolioAnalyticsPanel from "../components/PortfolioAnalyticsPanel";
 
 
 function PortfolioPage() {
@@ -41,6 +43,7 @@ function PortfolioPage() {
           borrowersResponse,
         ]
       ) => {
+
         if (
           !summaryResponse.ok ||
           !portfolioResponse.ok ||
@@ -50,6 +53,7 @@ function PortfolioPage() {
             "Unable to load portfolio intelligence"
           );
         }
+
 
         return {
           summary:
@@ -105,11 +109,14 @@ function PortfolioPage() {
   // =====================================================
 
   const enrichedPortfolio = useMemo(() => {
+
     return portfolio.map((account) => {
+
       const borrower =
         borrowerMap[
           account.borrower_id
         ];
+
 
       return {
         ...account,
@@ -120,6 +127,7 @@ function PortfolioPage() {
         loan_amount:
           borrower?.loan_amount ?? null,
       };
+
     });
 
   }, [
@@ -133,6 +141,7 @@ function PortfolioPage() {
   // =====================================================
 
   const sectors = useMemo(() => {
+
     return [
       ...new Set(
         enrichedPortfolio
@@ -152,6 +161,7 @@ function PortfolioPage() {
   // =====================================================
 
   const filteredPortfolio = useMemo(() => {
+
     return enrichedPortfolio.filter(
       (account) => {
 
@@ -247,7 +257,7 @@ function PortfolioPage() {
 
       <Header
         title="Portfolio Intelligence"
-        subtitle="Portfolio-wide deterioration, intervention priority and historical coverage."
+        subtitle="Portfolio-wide deterioration, intervention priority, covenant pressure, concentration and historical coverage."
       />
 
 
@@ -338,7 +348,7 @@ function PortfolioPage() {
 
 
       {/* =================================================
-          PORTFOLIO TABLE
+          PORTFOLIO RANKING
           ================================================= */}
 
       <section className="section-card">
@@ -350,8 +360,7 @@ function PortfolioPage() {
           </h2>
 
           <p>
-            Ranked using current condition,
-            deterioration trajectory,
+            Ranked using current condition, deterioration trajectory,
             persistence and cross-signal convergence.
           </p>
 
@@ -482,20 +491,24 @@ function PortfolioPage() {
         <div className="portfolio-result-count">
 
           Showing{" "}
+
           <strong>
             {filteredPortfolio.length}
           </strong>
+
           {" of "}
+
           <strong>
             {enrichedPortfolio.length}
           </strong>
+
           {" borrowers"}
 
         </div>
 
 
         {/* ===============================================
-            LOADING / ERROR
+            LOADING / ERROR / EMPTY
             =============================================== */}
 
         {loading ? (
@@ -607,6 +620,20 @@ function PortfolioPage() {
 
       </section>
 
+
+      {/* =================================================
+          COVENANT PRESSURE
+          ================================================= */}
+
+      <CovenantPressurePanel />
+
+
+      {/* =================================================
+          PORTFOLIO CONCENTRATION ANALYTICS
+          ================================================= */}
+
+      <PortfolioAnalyticsPanel />
+
     </div>
   );
 }
@@ -661,14 +688,14 @@ function PortfolioRow({
 
 
         <td>
-
           {
             account.loan_amount
             !== null
+
               ? `₹${account.loan_amount} Cr`
+
               : "—"
           }
-
         </td>
 
 
@@ -775,7 +802,9 @@ function PortfolioRow({
                     {
                       account.sector
                     }
+
                     {" · "}
+
                     {
                       hasHistory
                         ? "Historical trajectory available"
@@ -888,7 +917,7 @@ function PortfolioRow({
 
 
               {/* =========================================
-                  EXPLANATIONS
+                  EXPLAINABILITY
                   ========================================= */}
 
               {
