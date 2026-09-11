@@ -22,6 +22,12 @@ from portfolio_analytics import (
     analyze_portfolio_concentration,
 )
 
+from backtest_engine import (
+    replay_borrower,
+    backtest_borrower,
+    backtest_portfolio,
+)
+
 
 # =========================================================
 # FASTAPI INITIALIZATION
@@ -30,10 +36,10 @@ from portfolio_analytics import (
 app = FastAPI(
     title="RiskVision API",
     description=(
-        "Credit deterioration, intervention, covenant "
-        "and portfolio intelligence API"
+        "Credit deterioration, intervention, covenant, "
+        "portfolio analytics and historical validation API"
     ),
-    version="0.3.0",
+    version="0.4.0",
 )
 
 
@@ -59,7 +65,7 @@ def home():
 
     return {
         "message": "RiskVision API Running",
-        "version": "0.3.0",
+        "version": "0.4.0",
     }
 
 
@@ -83,10 +89,12 @@ def get_borrowers():
         ORDER BY id
     """
 
+
     df = pd.read_sql(
         query,
         engine,
     )
+
 
     return df.to_dict(
         orient="records"
@@ -129,6 +137,7 @@ def get_borrower_detail(
         WHERE borrowers.id = :borrower_id
     """)
 
+
     borrower_df = pd.read_sql(
         borrower_query,
         engine,
@@ -136,6 +145,7 @@ def get_borrower_detail(
             "borrower_id": borrower_id
         },
     )
+
 
     if borrower_df.empty:
 
@@ -164,6 +174,7 @@ def get_borrower_detail(
             alerts.created_at DESC,
             alerts.id DESC
     """)
+
 
     alerts_df = pd.read_sql(
         alert_query,
@@ -209,6 +220,7 @@ def get_borrower_deterioration(
 
         WHERE id = :borrower_id
     """)
+
 
     with engine.connect() as conn:
 
@@ -261,6 +273,7 @@ def get_borrower_history(
 
         WHERE id = :borrower_id
     """)
+
 
     with engine.connect() as conn:
 
@@ -466,6 +479,7 @@ def get_borrower_covenants(
         WHERE id = :borrower_id
     """)
 
+
     with engine.connect() as conn:
 
         borrower = conn.execute(
@@ -499,6 +513,83 @@ def get_borrower_covenants(
 
 
     return result
+
+
+# =========================================================
+# HISTORICAL BORROWER REPLAY
+# =========================================================
+
+@app.get("/borrowers/{borrower_id}/replay")
+def borrower_replay(
+    borrower_id: int,
+):
+    """
+    Reconstruct borrower deterioration intelligence
+    across historical observation dates.
+
+    Each replay point only uses information that was
+    available on or before that date.
+    """
+
+    try:
+
+        return replay_borrower(
+            borrower_id
+        )
+
+    except ValueError as exc:
+
+        raise HTTPException(
+            status_code=404,
+            detail=str(exc),
+        )
+
+
+# =========================================================
+# BORROWER BACKTEST
+# =========================================================
+
+@app.get("/borrowers/{borrower_id}/backtest")
+def borrower_backtest(
+    borrower_id: int,
+):
+    """
+    Evaluate historical intervention-priority migration
+    and lead time relative to labelled stress events.
+
+    Current stress-event labels are synthetic
+    development data.
+    """
+
+    try:
+
+        return backtest_borrower(
+            borrower_id
+        )
+
+    except ValueError as exc:
+
+        raise HTTPException(
+            status_code=404,
+            detail=str(exc),
+        )
+
+
+# =========================================================
+# PORTFOLIO BACKTEST SUMMARY
+# =========================================================
+
+@app.get("/backtest_summary")
+def backtest_summary():
+    """
+    Return portfolio-level historical replay and
+    synthetic backtesting results.
+
+    This is development validation and must not be
+    interpreted as institutional predictive validation.
+    """
+
+    return backtest_portfolio()
 
 
 # =========================================================
@@ -963,3 +1054,4 @@ if __name__ == "__main__":
         port=8000,
         reload=True,
     )
+    

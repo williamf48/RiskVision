@@ -1,4 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
 
 import DashboardLayout from "./components/DashboardLayout";
 
@@ -9,6 +13,7 @@ import InterventionPage from "./pages/InterventionPage";
 import AlertsPage from "./pages/AlertsPage";
 import ReportsPage from "./pages/ReportsPage";
 import BorrowerPage from "./pages/BorrowerPage";
+import ValidationPage from "./pages/ValidationPage";
 
 import "./App.css";
 
@@ -54,6 +59,11 @@ function App() {
           <Route
             path="/reports"
             element={<ReportsPage />}
+          />
+
+          <Route
+            path="/validation"
+            element={<ValidationPage />}
           />
 
         </Route>

@@ -1,34 +1,48 @@
-import { NavLink } from "react-router-dom";
+import {
+  NavLink,
+} from "react-router-dom";
 
 
 function Sidebar() {
 
   const navItems = [
+
     {
       label: "Dashboard",
       path: "/",
       end: true,
     },
+
     {
       label: "Portfolio",
       path: "/portfolio",
     },
+
     {
       label: "Borrowers",
       path: "/borrowers",
     },
+
     {
       label: "Interventions",
       path: "/interventions",
     },
+
     {
       label: "Alerts",
       path: "/alerts",
     },
+
     {
       label: "Reports",
       path: "/reports",
     },
+
+    {
+      label: "Validation",
+      path: "/validation",
+    },
+
   ];
 
 
@@ -42,8 +56,15 @@ function Sidebar() {
         </div>
 
         <div>
-          <h2>RiskVision</h2>
-          <span>Credit Intelligence</span>
+
+          <h2>
+            RiskVision
+          </h2>
+
+          <span>
+            Credit Intelligence
+          </span>
+
         </div>
 
       </div>
@@ -51,28 +72,53 @@ function Sidebar() {
 
       <nav className="sidebar-nav">
 
-        {navItems.map((item) => (
+        {
+          navItems.map(
+            (item) => (
 
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.end}
-            className={({ isActive }) =>
-              isActive
-                ? "sidebar-link active"
-                : "sidebar-link"
-            }
-          >
-            {item.label}
-          </NavLink>
+              <NavLink
 
-        ))}
+                key={
+                  item.path
+                }
+
+                to={
+                  item.path
+                }
+
+                end={
+                  item.end
+                }
+
+                className={({
+                  isActive,
+                }) =>
+
+                  isActive
+                    ? "sidebar-link active"
+                    : "sidebar-link"
+
+                }
+
+              >
+                {
+                  item.label
+                }
+              </NavLink>
+
+            )
+          )
+        }
 
       </nav>
 
 
       <div className="sidebar-footer">
-        <span>Historical Intelligence Engine</span>
+
+        <span>
+          Historical Intelligence Engine
+        </span>
+
       </div>
 
     </aside>

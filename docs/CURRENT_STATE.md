@@ -881,3 +881,66 @@ Current synthetic portfolio analytics:
 Important limitation:
 - Current covenant thresholds, facilities, historical observations and portfolio results use synthetic development data.
 - Intervention priorities and covenant-pressure classifications use transparent MVP heuristic logic and are not institutionally validated credit-policy decisions or probability-of-default estimates.
+
+## Historical Replay and Backtesting - 11 September 2026
+
+RiskVision now includes point-in-time historical replay and a synthetic backtesting framework for validating deterioration-engine behaviour over time.
+
+### Point-in-time deterioration replay
+- Extended the trajectory engine with optional as_of_date analysis.
+- Historical analysis only uses observations available on or before the replay date.
+- Current production-style calls remain backward compatible when no as_of_date is supplied.
+- Added point-in-time borrower and portfolio analysis without changing the existing trajectory mathematics.
+- Historical replay explicitly prevents future observations from leaking into earlier analysis states.
+
+### Borrower replay
+- Added automatic replay across each borrower's historical observation dates.
+- Replay records intervention priority, analyzed signals, deterioration, critical-condition count, persistence, acceleration and cross-signal convergence at every historical point.
+- Falcon Realty historical replay demonstrates migration from insufficient history through MEDIUM and HIGH to URGENT intervention priority as additional deterioration evidence becomes available.
+
+### Synthetic stress-event framework
+- Added borrower_stress_events schema for labelled outcome events.
+- Added migration: backend/migrations/004_create_stress_events.py.
+- Added synthetic event seed data: backend/seeds/004_seed_stress_events.py.
+- Synthetic stress-event labels are explicitly separated from real institutional validation data.
+
+### Historical backtesting engine
+- Added backend/backtest_engine.py.
+- Added borrower-level and portfolio-level replay backtesting.
+- Added first MEDIUM, HIGH and URGENT intervention dates.
+- Added first alert date and maximum historical intervention priority.
+- Added lead-time calculation relative to labelled stress events.
+- Added historical maximum cross-signal convergence tracking.
+- Added portfolio confusion-matrix framework with true positives, false positives, true negatives and false negatives.
+- Added precision, recall and specificity calculations for development validation.
+- Current synthetic validation set contains 5 historically assessable borrowers and 2 synthetic stress-event labels.
+- Synthetic backtesting metrics are development validation only and are not presented as predictive-performance claims.
+
+### Historical validation API
+- Added GET /borrowers/{borrower_id}/replay.
+- Added GET /borrowers/{borrower_id}/backtest.
+- Added GET /backtest_summary.
+- FastAPI version advanced to include historical validation capabilities.
+
+### Automated regression testing
+- Added backend/tests/test_riskvision_regression.py.
+- Added 10 automated regression tests covering current deterioration state, historical replay, look-ahead protection, insufficient-data handling, intervention summary, covenant intelligence, portfolio analytics and backtesting consistency.
+- Final regression run: 10 tests passed.
+
+### Validation and Replay workspace
+- Added an interactive Validation workspace to the React application.
+- Added borrower selection across historically assessable accounts.
+- Added intervention-priority migration visualization.
+- Added historical replay table with deterioration, critical-condition, persistence, acceleration and convergence information.
+- Added first MEDIUM, HIGH and URGENT escalation dates.
+- Added labelled stress-event and lead-time display.
+- Added prominent SYNTHETIC VALIDATION disclosure to prevent development results from being interpreted as institutional predictive validation.
+
+### Final pre-resume validation
+- Backend regression suite passed all 10 tests.
+- Frontend production build completed successfully.
+- Existing dashboard, borrower, intervention, covenant, portfolio analytics, alerts and reporting functionality remains integrated.
+
+Important limitation:
+- Historical borrower observations, covenant data and labelled stress events in the current validation environment are synthetic development data.
+- Backtesting results demonstrate system behaviour, temporal replay and engineering correctness; they do not establish real-world predictive accuracy or institutionally validated credit performance.

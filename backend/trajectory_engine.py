@@ -87,7 +87,17 @@ PRIORITY_RANK = {
 def get_metric_history(
     borrower_id,
     metric_code,
+    as_of_date=None,
 ):
+    """
+    Load metric observations for one borrower/metric.
+
+    If as_of_date is supplied, only observations available
+    on or before that date are returned. This enables
+    historical replay without look-ahead leakage.
+
+    If as_of_date is None, current behaviour is preserved.
+    """
 
     query = """
     SELECT
@@ -96,16 +106,51 @@ def get_metric_history(
     FROM borrower_metric_observations
     WHERE borrower_id = %(borrower_id)s
       AND metric_code = %(metric_code)s
+    """
+
+    params = {
+        "borrower_id": borrower_id,
+        "metric_code": metric_code,
+    }
+
+
+    if as_of_date is not None:
+
+        try:
+
+            cutoff_date = (
+                pd.Timestamp(
+                    as_of_date
+                ).date()
+            )
+
+        except Exception as exc:
+
+            raise ValueError(
+                f"Invalid as_of_date: "
+                f"{as_of_date}"
+            ) from exc
+
+
+        query += """
+          AND observation_date <= %(as_of_date)s
+        """
+
+
+        params[
+            "as_of_date"
+        ] = cutoff_date
+
+
+    query += """
     ORDER BY observation_date
     """
+
 
     return pd.read_sql(
         query,
         engine,
-        params={
-            "borrower_id": borrower_id,
-            "metric_code": metric_code,
-        },
+        params=params,
     )
 
 
@@ -743,6 +788,7 @@ def analyze_trajectory(
 def analyze_metric(
     borrower_id,
     metric_code,
+    as_of_date=None,
 ):
 
     metric_code = (
@@ -785,6 +831,7 @@ def analyze_metric(
     df = get_metric_history(
         borrower_id,
         metric_code,
+        as_of_date=as_of_date,
     )
 
 
@@ -859,6 +906,22 @@ def analyze_metric(
     result[
         "observations"
     ] = len(values)
+
+
+    result[
+        "as_of_date"
+    ] = (
+        str(
+            pd.Timestamp(
+                as_of_date
+            ).date()
+        )
+
+        if as_of_date
+        is not None
+
+        else None
+    )
 
 
     return result
@@ -1287,6 +1350,7 @@ def build_intervention_priority(
 
 def analyze_borrower(
     borrower_id,
+    as_of_date=None,
 ):
 
     metric_results = []
@@ -1313,6 +1377,7 @@ def analyze_borrower(
         result = analyze_metric(
             borrower_id,
             metric_code,
+            as_of_date=as_of_date,
         )
 
 
@@ -1482,6 +1547,20 @@ def analyze_borrower(
         "borrower_id":
             borrower_id,
 
+        "as_of_date":
+            (
+                str(
+                    pd.Timestamp(
+                        as_of_date
+                    ).date()
+                )
+
+                if as_of_date
+                is not None
+
+                else None
+            ),
+
         "configured_metrics":
             len(
                 METRIC_CONFIG
@@ -1568,10 +1647,17 @@ def analyze_borrower(
 # ANALYZE ENTIRE PORTFOLIO
 # =========================================================
 
-def analyze_portfolio():
+def analyze_portfolio(
+    as_of_date=None,
+):
     """
     Analyze every borrower and return a ranked
     intervention-priority watchlist.
+
+    If as_of_date is supplied, every borrower is analyzed
+    using only observations available on or before that
+    date. This supports historical portfolio replay
+    without look-ahead leakage.
 
     MVP implementation:
     each borrower is analyzed individually.
@@ -1607,7 +1693,8 @@ def analyze_portfolio():
 
 
         result = analyze_borrower(
-            borrower_id
+            borrower_id,
+            as_of_date=as_of_date,
         )
 
 
@@ -1618,6 +1705,11 @@ def analyze_portfolio():
 
             "borrower_name":
                 borrower.borrower_name,
+
+            "as_of_date":
+                result[
+                    "as_of_date"
+                ],
 
 
             "intervention_priority":
@@ -1754,21 +1846,42 @@ def analyze_portfolio():
 # PORTFOLIO INTERVENTION SUMMARY
 # =========================================================
 
-def summarize_portfolio_interventions():
+def summarize_portfolio_interventions(
+    as_of_date=None,
+):
     """
     Summarize borrower intervention priorities across
     the portfolio.
+
+    If as_of_date is supplied, the summary represents
+    only information available on or before that date.
 
     This uses the deterioration engine rather than
     the legacy static risk-score classification.
     """
 
     portfolio = (
-        analyze_portfolio()
+        analyze_portfolio(
+            as_of_date=as_of_date,
+        )
     )
 
 
     summary = {
+
+        "as_of_date":
+            (
+                str(
+                    pd.Timestamp(
+                        as_of_date
+                    ).date()
+                )
+
+                if as_of_date
+                is not None
+
+                else None
+            ),
 
         "total_borrowers":
             len(
