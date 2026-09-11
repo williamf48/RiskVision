@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import Any
 
 import pandas as pd
@@ -9,6 +10,23 @@ from connection import engine
 
 
 JsonRecord = dict[str, Any]
+
+
+def _string_key_record(record: Mapping[Any, Any]) -> JsonRecord:
+    """Normalize database/pandas mappings to JSON-style string-keyed records."""
+    return {
+        str(key): value
+        for key, value in record.items()
+    }
+
+
+def _records_from_frame(frame: pd.DataFrame) -> list[JsonRecord]:
+    """Convert a DataFrame into typed, string-keyed API records."""
+    raw_records = frame.to_dict(orient="records")
+    return [
+        _string_key_record(record)
+        for record in raw_records
+    ]
 
 
 def list_borrowers() -> list[JsonRecord]:
@@ -23,7 +41,9 @@ def list_borrowers() -> list[JsonRecord]:
         ORDER BY id
     """
 
-    return pd.read_sql(query, engine).to_dict(orient="records")
+    return _records_from_frame(
+        pd.read_sql(query, engine)
+    )
 
 
 def get_borrower_identity(borrower_id: int) -> JsonRecord | None:
@@ -39,7 +59,11 @@ def get_borrower_identity(borrower_id: int) -> JsonRecord | None:
             {"borrower_id": borrower_id},
         ).mappings().one_or_none()
 
-    return dict(row) if row is not None else None
+    return (
+        _string_key_record(row)
+        if row is not None
+        else None
+    )
 
 
 def get_borrower_detail(borrower_id: int) -> JsonRecord | None:
@@ -90,8 +114,12 @@ def get_borrower_detail(borrower_id: int) -> JsonRecord | None:
         params={"borrower_id": borrower_id},
     )
 
-    borrower = borrower_df.iloc[0].to_dict()
-    borrower["alerts"] = alerts_df.to_dict(orient="records")
+    borrower = _string_key_record(
+        borrower_df.iloc[0].to_dict()
+    )
+    borrower["alerts"] = _records_from_frame(
+        alerts_df
+    )
     return borrower
 
 
@@ -171,7 +199,9 @@ def list_risk_scores() -> list[JsonRecord]:
             ON borrowers.id = risk_scores.borrower_id
         ORDER BY borrowers.id
     """
-    return pd.read_sql(query, engine).to_dict(orient="records")
+    return _records_from_frame(
+        pd.read_sql(query, engine)
+    )
 
 
 def list_alerts(severity: str | None = None) -> list[JsonRecord]:
@@ -195,7 +225,13 @@ def list_alerts(severity: str | None = None) -> list[JsonRecord]:
 
     query += " ORDER BY alerts.created_at DESC, alerts.id DESC"
 
-    return pd.read_sql(query, engine, params=params).to_dict(orient="records")
+    return _records_from_frame(
+        pd.read_sql(
+            query,
+            engine,
+            params=params,
+        )
+    )
 
 
 def get_portfolio_summary() -> JsonRecord:
@@ -237,7 +273,9 @@ def list_legacy_watchlist() -> list[JsonRecord]:
         WHERE risk_scores.classification IN ('Watchlist', 'High Risk')
         ORDER BY risk_scores.score DESC, borrowers.id
     """
-    return pd.read_sql(query, engine).to_dict(orient="records")
+    return _records_from_frame(
+        pd.read_sql(query, engine)
+    )
 
 
 def list_top_risk_accounts(limit: int = 10) -> list[JsonRecord]:
@@ -254,8 +292,10 @@ def list_top_risk_accounts(limit: int = 10) -> list[JsonRecord]:
         LIMIT :limit
     """)
 
-    return pd.read_sql(
-        query,
-        engine,
-        params={"limit": limit},
-    ).to_dict(orient="records")
+    return _records_from_frame(
+        pd.read_sql(
+            query,
+            engine,
+            params={"limit": limit},
+        )
+    )
