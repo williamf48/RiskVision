@@ -11,13 +11,16 @@ MIGRATIONS_DIR = BACKEND_DIR / "migrations"
 SEEDS_DIR = BACKEND_DIR / "seeds"
 
 
+# =========================================================
+# SAFETY
+# =========================================================
+
 def ensure_empty_database():
     """
     Bootstrap is intended only for a fresh database.
 
-    Refuse to run against a database that already contains
-    tables so existing development or production data cannot
-    accidentally be overwritten.
+    Refuse to run against an existing database so that
+    development or production data cannot be overwritten.
     """
 
     existing_tables = (
@@ -35,15 +38,22 @@ def ensure_empty_database():
         )
 
 
-def run_python_script(path: Path):
+# =========================================================
+# SCRIPT RUNNERS
+# =========================================================
 
+def run_python_script(
+    path: Path,
+):
     if not path.exists():
         raise RuntimeError(
             f"Required bootstrap file not found: {path}"
         )
 
     print()
-    print(f">>> Running {path.name}")
+    print(
+        f">>> Running {path.name}"
+    )
 
     runpy.run_path(
         str(path),
@@ -51,38 +61,51 @@ def run_python_script(path: Path):
     )
 
 
-def run_sql_file(path: Path):
-
+def run_sql_file(
+    path: Path,
+):
     if not path.exists():
         raise RuntimeError(
             f"Required bootstrap file not found: {path}"
         )
 
     print()
-    print(f">>> Running {path.name}")
+    print(
+        f">>> Running {path.name}"
+    )
 
     sql = path.read_text(
         encoding="utf-8"
     )
 
     with engine.begin() as conn:
-        conn.exec_driver_sql(sql)
+        conn.exec_driver_sql(
+            sql
+        )
 
     print(
         f"{path.name} complete."
     )
 
 
+# =========================================================
+# BOOTSTRAP
+# =========================================================
+
 def bootstrap_database():
 
     print("=" * 72)
-    print("RISKVISION DATABASE BOOTSTRAP")
+    print(
+        "RISKVISION DATABASE BOOTSTRAP"
+    )
     print("=" * 72)
+
     print(
         f"Target database: {engine.url.database}"
     )
 
     ensure_empty_database()
+
 
     # =====================================================
     # CORE PORTFOLIO
@@ -98,8 +121,9 @@ def bootstrap_database():
         / "000_seed_core_portfolio.py"
     )
 
+
     # =====================================================
-    # HISTORICAL OBSERVATIONS
+    # HISTORICAL METRIC OBSERVATIONS
     # =====================================================
 
     run_sql_file(
@@ -117,6 +141,7 @@ def bootstrap_database():
         / "002_seed_portfolio_histories.py"
     )
 
+
     # =====================================================
     # FACILITIES + COVENANTS
     # =====================================================
@@ -131,8 +156,9 @@ def bootstrap_database():
         / "003_seed_facilities_covenants.py"
     )
 
+
     # =====================================================
-    # STRESS EVENTS
+    # SYNTHETIC STRESS EVENTS
     # =====================================================
 
     run_python_script(
@@ -144,6 +170,17 @@ def bootstrap_database():
         SEEDS_DIR
         / "004_seed_stress_events.py"
     )
+
+
+    # =====================================================
+    # DATABASE INVARIANTS
+    # =====================================================
+
+    run_python_script(
+        MIGRATIONS_DIR
+        / "005_harden_core_schema.py"
+    )
+
 
     # =====================================================
     # FINAL SCHEMA VERIFICATION
@@ -162,15 +199,18 @@ def bootstrap_database():
         "borrower_stress_events",
     }
 
+
     actual_tables = set(
         inspect(engine)
         .get_table_names()
     )
 
+
     missing_tables = (
         expected_tables
         - actual_tables
     )
+
 
     if missing_tables:
         raise RuntimeError(
@@ -180,14 +220,17 @@ def bootstrap_database():
             )
         )
 
+
     print()
     print("=" * 72)
     print(
         "RISKVISION DATABASE BOOTSTRAP COMPLETE"
     )
     print("=" * 72)
+
     print(
-        f"Tables created: {len(expected_tables)}"
+        f"Tables verified: "
+        f"{len(expected_tables)}"
     )
 
 
