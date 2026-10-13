@@ -1,20 +1,13 @@
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
+from connection import engine, SessionLocal
+from sqlalchemy import text
 import pandas as pd
 
 # ============================================
 # DATABASE CONNECTION
 # ============================================
 
-DATABASE_URL = "postgresql://postgres:william4256@localhost:5432/risk_platform"
 
-engine = create_engine(DATABASE_URL)
 
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
 
 db = SessionLocal()
 
@@ -87,7 +80,7 @@ for index, row in df.iterrows():
     # BUSINESS DETERIORATION
     # ============================================
 
-    if row["revenue_decline"] > 0.20:
+    if row["revenue_decline"] > 20:
         alerts.append(("Business Deterioration", "MEDIUM"))
 
     # ============================================

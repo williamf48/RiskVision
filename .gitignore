@@ -139,3 +139,7 @@ tmp/
 *.pfx
 # Microsoft Office temporary lock files
 ~$*
+# Isolated synthetic demonstration database
+backend/.demo/
+riskvision-update-backup-*/
+*.riskvision-update-tmp

@@ -1,10 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
+from contextlib import asynccontextmanager
+import os
 
 import pandas as pd
 
-from connection import engine
+from connection import engine, DEMO_MODE
+from case_store import initialize as initialize_cases
+from monitoring_api import router as monitoring_router
 
 from trajectory_engine import (
     analyze_borrower,
@@ -33,14 +37,22 @@ from backtest_engine import (
 # FASTAPI INITIALIZATION
 # =========================================================
 
+@asynccontextmanager
+async def lifespan(app):
+    initialize_cases(engine)
+    yield
+
+
 app = FastAPI(
     title="RiskVision API",
     description=(
         "Credit deterioration, intervention, covenant, "
         "portfolio analytics and historical validation API"
     ),
-    version="0.4.0",
+    version="0.5.0",
+    lifespan=lifespan,
 )
+app.include_router(monitoring_router)
 
 
 # =========================================================
@@ -49,8 +61,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=os.getenv("RISKVISION_ALLOWED_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173").split(","),
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -65,7 +77,7 @@ def home():
 
     return {
         "message": "RiskVision API Running",
-        "version": "0.4.0",
+        "version": "0.5.0",
     }
 
 
@@ -1054,4 +1066,21 @@ if __name__ == "__main__":
         port=8000,
         reload=True,
     )
-    
+
+@app.get("/health")
+def health():
+    """Connection and data provenance for the interface; no credentials."""
+    try:
+        with engine.connect() as conn:
+            latest = conn.execute(text(
+                "SELECT MAX(observation_date) FROM borrower_metric_observations"
+            )).scalar()
+        return {
+            "status": "ready",
+            "data_mode": "synthetic" if DEMO_MODE else "connected",
+            "latest_observation": str(latest) if latest else None,
+            "analysis_method": "deterministic_rules",
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail="Database unavailable") from exc
+

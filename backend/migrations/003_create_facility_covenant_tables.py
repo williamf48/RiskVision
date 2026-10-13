@@ -316,7 +316,8 @@ def run_migration():
         for statement in statements:
 
             connection.execute(
-                text(statement)
+                text(statement.replace("SERIAL PRIMARY KEY", "INTEGER PRIMARY KEY")
+                     if engine.dialect.name == "sqlite" else statement)
             )
 
 

@@ -1,3 +1,4 @@
+import { apiFetch } from "../utils/api";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -18,7 +19,7 @@ function AlertsPage() {
 
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/alerts")
+    apiFetch("/alerts")
 
       .then((response) => {
         if (!response.ok) {

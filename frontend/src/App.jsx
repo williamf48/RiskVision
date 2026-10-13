@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -6,16 +7,19 @@ import {
 
 import DashboardLayout from "./components/DashboardLayout";
 
-import Dashboard from "./pages/Dashboard";
-import PortfolioPage from "./pages/PortfolioPage";
-import BorrowersPage from "./pages/BorrowersPage";
-import InterventionPage from "./pages/InterventionPage";
-import AlertsPage from "./pages/AlertsPage";
-import ReportsPage from "./pages/ReportsPage";
-import BorrowerPage from "./pages/BorrowerPage";
-import ValidationPage from "./pages/ValidationPage";
+import MonitoringPage from "./pages/MonitoringPage";
+import PolicyPage from "./pages/PolicyPage";
+const PortfolioPage = lazy(() => import("./pages/PortfolioPage"));
+const BorrowersPage = lazy(() => import("./pages/BorrowersPage"));
+const InterventionPage = lazy(() => import("./pages/InterventionPage"));
+const AlertsPage = lazy(() => import("./pages/AlertsPage"));
+const ReportsPage = lazy(() => import("./pages/ReportsPage"));
+const BorrowerPage = lazy(() => import("./pages/BorrowerPage"));
+const ValidationPage = lazy(() => import("./pages/ValidationPage"));
 
 import "./App.css";
+import "./professional.css";
+import "./monitoring.css";
 
 
 function App() {
@@ -28,8 +32,12 @@ function App() {
 
           <Route
             path="/"
-            element={<Dashboard />}
+            element={<MonitoringPage key="monitoring" />}
           />
+          <Route path="/cases" element={<MonitoringPage key="cases" view="cases" />} />
+          <Route path="/covenants" element={<MonitoringPage key="covenants" view="covenants" />} />
+          <Route path="/data-quality" element={<MonitoringPage key="quality" view="quality" />} />
+          <Route path="/policy" element={<PolicyPage />} />
 
           <Route
             path="/portfolio"

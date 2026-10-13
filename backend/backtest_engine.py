@@ -1,3 +1,4 @@
+from sqlalchemy import text
 import pandas as pd
 
 from connection import engine
@@ -32,12 +33,12 @@ def get_borrower(
 
     FROM borrowers
 
-    WHERE id = %(borrower_id)s
+    WHERE id = :borrower_id
     """
 
 
     df = pd.read_sql(
-        query,
+        text(query),
         engine,
         params={
             "borrower_id":
@@ -75,14 +76,14 @@ def get_replay_dates(
 
     FROM borrower_metric_observations
 
-    WHERE borrower_id = %(borrower_id)s
+    WHERE borrower_id = :borrower_id
 
     ORDER BY observation_date
     """
 
 
     df = pd.read_sql(
-        query,
+        text(query),
         engine,
         params={
             "borrower_id":
@@ -127,14 +128,14 @@ def get_stress_events(
 
     FROM borrower_stress_events
 
-    WHERE borrower_id = %(borrower_id)s
+    WHERE borrower_id = :borrower_id
 
     ORDER BY event_date
     """
 
 
     df = pd.read_sql(
-        query,
+        text(query),
         engine,
         params={
             "borrower_id":
@@ -593,7 +594,7 @@ def get_historically_assessable_borrowers():
 
 
     df = pd.read_sql(
-        query,
+        text(query),
         engine,
     )
 

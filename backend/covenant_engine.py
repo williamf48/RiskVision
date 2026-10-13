@@ -225,24 +225,13 @@ def analyze_covenant(
         JOIN borrowers b
             ON b.id = f.borrower_id
 
-        LEFT JOIN LATERAL (
-
-            SELECT
-                ct_inner.*
-
+        LEFT JOIN covenant_tests ct ON ct.id = (
+            SELECT ct_inner.id
             FROM covenant_tests ct_inner
-
-            WHERE
-                ct_inner.covenant_id = c.id
-
-            ORDER BY
-                ct_inner.test_date DESC,
-                ct_inner.id DESC
-
+            WHERE ct_inner.covenant_id = c.id
+            ORDER BY ct_inner.test_date DESC, ct_inner.id DESC
             LIMIT 1
-
-        ) ct
-            ON TRUE
+        )
 
         WHERE c.id = :covenant_id
     """)
@@ -343,25 +332,11 @@ def analyze_borrower_covenants(
         JOIN covenants c
             ON c.facility_id = f.id
 
-        LEFT JOIN LATERAL (
-
-            SELECT
-                ct_inner.*
-
-            FROM covenant_tests ct_inner
-
-            WHERE
-                ct_inner.covenant_id
-                = c.id
-
-            ORDER BY
-                ct_inner.test_date DESC,
-                ct_inner.id DESC
-
-            LIMIT 1
-
-        ) ct
-            ON TRUE
+        LEFT JOIN covenant_tests ct ON ct.id = (
+            SELECT ct_inner.id FROM covenant_tests ct_inner
+            WHERE ct_inner.covenant_id = c.id
+            ORDER BY ct_inner.test_date DESC, ct_inner.id DESC LIMIT 1
+        )
 
         WHERE
             b.id = :borrower_id

@@ -1,3 +1,4 @@
+import { apiFetch } from "../utils/api";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -18,11 +19,11 @@ function CovenantPressurePanel() {
 
   useEffect(() => {
     Promise.all([
-      fetch(
-        "http://127.0.0.1:8000/covenant_summary"
+      apiFetch(
+        "/covenant_summary"
       ),
-      fetch(
-        "http://127.0.0.1:8000/covenant_watchlist"
+      apiFetch(
+        "/covenant_watchlist"
       ),
     ])
 

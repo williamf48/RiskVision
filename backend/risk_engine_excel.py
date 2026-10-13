@@ -1,25 +1,20 @@
+import os
+from pathlib import Path
+from connection import engine, SessionLocal
 # =========================================================
 # RISK ENGINE + EXCEL PROCESSOR + POSTGRESQL INTEGRATION
 # =========================================================
 
 import pandas as pd
 
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
 
 # =========================================================
 # DATABASE CONNECTION
 # =========================================================
 
-DATABASE_URL = "postgresql://postgres:william4256@localhost:5432/risk_platform"
 
-engine = create_engine(DATABASE_URL)
 
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
 
 db = SessionLocal()
 
@@ -29,7 +24,7 @@ print("✅ Database Connected Successfully")
 # LOAD EXCEL FILE
 # =========================================================
 
-file_path = r"C:\Users\William\Documents\Risk Software\Book3.xlsx"
+file_path = os.getenv("RISKVISION_WORKBOOK", str(Path(__file__).resolve().parent.parent / "data" / "Book3.xlsx"))
 
 df = pd.read_excel(file_path)
 

@@ -1,3 +1,4 @@
+import { apiFetch } from "../utils/api";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -29,8 +30,8 @@ function PortfolioAnalyticsPanel() {
 
 
   useEffect(() => {
-    fetch(
-      "http://127.0.0.1:8000/portfolio_analytics"
+    apiFetch(
+      "/portfolio_analytics"
     )
 
       .then((response) => {

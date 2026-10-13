@@ -1,4 +1,59 @@
-# RiskVision Current State
+# RiskVision Current State â€” Professional Monitoring
+
+Updated: 13 October 2026
+
+RiskVision is a working credit-monitoring prototype with a React/Vite interface and a Python/FastAPI backend. Transparent rules combine financial deterioration, contractual covenant breaches and evidence quality into an analyst review queue. The current sample workspace contains 25 synthetic borrowers and â‚¹1,056 Cr of exposure.
+
+## Implemented workflow
+
+| Workspace | Current behavior |
+| --- | --- |
+| Monitoring | Ranked borrower queue, credit exceptions, exposure, evidence coverage, search, filters and reporting cutoff |
+| Borrower review | Four financial trend charts, priority drivers, evidence dates/sources, covenants and investigation prompts |
+| Covenant register | Facility-level thresholds, recomputed actual-versus-limit headroom, breach status and testing deadlines |
+| Analyst cases | Saved owner, status, due date, next action and decision rationale |
+| Decision history | Before/after case values and the supporting assessment saved with each decision |
+| Data quality | Missing, stale, estimated, conflicting, invalid and unscheduled evidence states |
+| Policy | Visible demonstration rules and thresholds under policy version `RV-MON-2.0` |
+| Portfolio and validation | Exposure/concentration analysis, original trajectory views, historical replay and synthetic stress backtests |
+| Exports | Filtered queue CSV and printable borrower review HTML |
+
+## Architecture and persistence
+
+- React, React Router and Recharts provide the interface. Route and chart bundles load as needed.
+- FastAPI exposes the original analysis routes plus `/monitoring`, borrower case routes, activity and policy.
+- SQLAlchemy connects to PostgreSQL in the normal workspace and to an isolated SQLite database in demo mode.
+- `backend/demo.py` bootstraps the synthetic SQLite portfolio. `start_demo.py` launches both services; `START_RISKVISION.bat` supports subsequent Windows runs.
+- Analyst cases and assessment snapshots persist in the workspace database. Expected-version checks reject stale edits with HTTP 409.
+- Local environment files, installed packages and database files are excluded from version control.
+
+## Monitoring logic
+
+Credit assessment, evidence quality and analyst case status are separate. Closing a case does not clear a breach or remove a financial warning.
+
+Confirmed active covenant breaches trigger urgent review, including a last confirmed breach that later valid evidence has not cleared. Contractual results are recomputed from actual values and thresholds before rounding; equality is at the limit rather than a breach.
+
+Freshness follows reporting cadence and period end. Only eligible observations establish current financial signals. Missing or stale evidence cannot establish healthy credit. Trends need at least three comparable observations; conflicting sources, cadence changes, invalid readings and reporting gaps break the comparable series.
+
+At the default observation cutoff, **31 May 2026**, Falcon Realty and Crest Realty are urgent. Crest's minimum DSCR test is **1.05Ã— against a required 1.10Ã—**. Moving the cutoff forward demonstrates aging evidence without clearing a known unresolved breach.
+
+## Verification
+
+Before publication, all **43 backend tests**, frontend lint and the production frontend build passed. The backend suite covers the original scenario regressions, historical replay, evidence boundaries, covenant calculations, persistent cases and concurrent-edit protection.
+
+The professional-monitoring update also has a previously completed desktop/mobile browser walkthrough covering navigation, filters, cutoff changes, saved decisions and exports. See [the demo guide](DEMO_GUIDE.md#verification-commands) to reproduce the automated checks.
+
+## Current boundaries
+
+The dataset is synthetic and the monitoring policy is a development policy. RiskVision does not implement a trained default-prediction model, authenticated users, role-based permissions or a tamper-proof regulatory audit system. Actor names are entered by the analyst. Historical cutoffs filter observations; they do not reconstruct historical contracts or publication timestamps.
+
+The sample SQLite bootstrap is complete. Normal PostgreSQL startup still expects an existing populated base schema; this branch does not provide the complete PostgreSQL bootstrap or CI pipeline. Default CORS is restricted to the two local development origins and can be configured with `RISKVISION_ALLOWED_ORIGINS`.
+
+See [the professional monitoring upgrade](MONITORING_UPGRADE.md) for the detailed policy, workflow research and production requirements.
+
+## Earlier development record
+
+The notes below retain the earlier implementation history. Their dated behavior and backlog describe those earlier stages; the current implementation is summarized above.
 
 Date: 1 September 2026
 
@@ -407,13 +462,13 @@ React
 This is the legacy RiskVision intelligence layer.
 
 The September development objective is to evolve this into a historical Borrower Deterioration Intelligence Engine.
-## Portfolio Data Integrity Cleanup — 7 September 2026
+## Portfolio Data Integrity Cleanup â€” 7 September 2026
 
 A database integrity audit identified that the 25-borrower mock portfolio had been imported twice.
 
-The obsolete import used borrower IDs 22–46. The canonical import used IDs 47–71.
+The obsolete import used borrower IDs 22â€“46. The canonical import used IDs 47â€“71.
 
-Evidence for selecting IDs 47–71 as canonical:
+Evidence for selecting IDs 47â€“71 as canonical:
 
 - 25/25 risk scores match the current scoring methodology.
 - The later records contain populated sector and loan-amount data.
@@ -423,7 +478,7 @@ Evidence for selecting IDs 47–71 as canonical:
 
 A full PostgreSQL backup was created before cleanup.
 
-The obsolete IDs 22–46 and their associated risk scores, financial rows and risk-history rows were removed transactionally.
+The obsolete IDs 22â€“46 and their associated risk scores, financial rows and risk-history rows were removed transactionally.
 
 A legacy prototype borrower, ABC Ltd (ID 1), was also removed after confirming it had no financials, risk score, alerts or risk history.
 
@@ -447,7 +502,7 @@ A new GET /borrowers/{borrower_id} endpoint provides live borrower detail, finan
 The React borrower drill-down now uses the real PostgreSQL borrower_id rather than list position.
 
 
-## Historical Deterioration Intelligence Foundation — 8 September 2026
+## Historical Deterioration Intelligence Foundation â€” 8 September 2026
 
 RiskVision now has a dedicated historical metric-observation layer separate from the legacy borrower_financials snapshot table.
 
@@ -515,7 +570,7 @@ Falcon Realty borrower-level analysis currently produces:
 This is the first implementation of RiskVision's trajectory-based and cross-signal deterioration intelligence layer.
 
 
-## Current Condition + Trajectory Intelligence — 8 September 2026
+## Current Condition + Trajectory Intelligence â€” 8 September 2026
 
 RiskVision's deterioration engine now combines current-condition severity with historical trajectory analysis.
 

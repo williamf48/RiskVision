@@ -274,7 +274,7 @@ def seed():
                             :threshold_value,
                             :warning_buffer_pct,
                             :testing_frequency,
-                            '2026-12-31',
+                            '2026-06-30',
                             'ACTIVE'
 
                         )

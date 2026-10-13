@@ -1,3 +1,4 @@
+import { apiFetch } from "../utils/api";
 import { useEffect, useState } from "react";
 
 import {
@@ -17,8 +18,8 @@ function RiskChart() {
 
   useEffect(() => {
 
-    fetch(
-      "http://127.0.0.1:8000/intervention_summary"
+    apiFetch(
+      "/intervention_summary"
     )
       .then((response) => {
 

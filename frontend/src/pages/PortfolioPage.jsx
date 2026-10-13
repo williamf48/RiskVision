@@ -1,3 +1,4 @@
+import { apiFetch } from "../utils/api";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -27,13 +28,11 @@ function PortfolioPage() {
   // =====================================================
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
 
     Promise.all([
-      fetch("http://127.0.0.1:8000/intervention_summary"),
-      fetch("http://127.0.0.1:8000/intervention_watchlist"),
-      fetch("http://127.0.0.1:8000/borrowers"),
+      apiFetch("/intervention_summary"),
+      apiFetch("/intervention_watchlist"),
+      apiFetch("/borrowers"),
     ])
 
       .then(async (

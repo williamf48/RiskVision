@@ -1,294 +1,185 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-
+import { Link, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
-
-
-function BorrowersPage() {
-
-  const [borrowers, setBorrowers] = useState([]);
-  const [interventions, setInterventions] = useState([]);
-
-  const [search, setSearch] = useState("");
+import Icon from "../components/Icon";
+import { getJson, money, label } from "../utils/api";
+export default function BorrowersPage() {
+  const [params, setParams] = useSearchParams();
+  const search = params.get("q") || "";
+  const [data, setData] = useState(null);
+  const [error, setError] = useState("");
+  const [attempt, setAttempt] = useState(0);
   const [sector, setSector] = useState("ALL");
-
-
+  const [priority, setPriority] = useState("ALL");
   useEffect(() => {
-
-    Promise.all([
-      fetch("http://127.0.0.1:8000/borrowers"),
-      fetch("http://127.0.0.1:8000/intervention_watchlist"),
-    ])
-
-      .then(async ([borrowersResponse, interventionsResponse]) => {
-
-        return {
-          borrowers:
-            await borrowersResponse.json(),
-
-          interventions:
-            await interventionsResponse.json(),
-        };
+    let active = true;
+    Promise.all([getJson("/borrowers"), getJson("/intervention_watchlist")])
+      .then(([borrowers, interventions]) => {
+        if (active)
+          setData({
+            borrowers,
+            map: Object.fromEntries(
+              interventions.map((a) => [a.borrower_id, a]),
+            ),
+          });
       })
-
-      .then((data) => {
-
-        setBorrowers(
-          data.borrowers
-        );
-
-        setInterventions(
-          data.interventions
-        );
+      .catch((e) => {
+        if (active) setError(e.message);
       });
-
-  }, []);
-
-
-  const interventionMap = useMemo(() => {
-
-    const map = {};
-
-    interventions.forEach(
-      (item) => {
-
-        map[item.borrower_id] = item;
-
-      }
-    );
-
-    return map;
-
-  }, [interventions]);
-
-
-  const sectors = useMemo(() => {
-
-    return [
-      ...new Set(
-        borrowers
-          .map(
-            (borrower) =>
-              borrower.sector
-          )
-          .filter(Boolean)
-      ),
-    ].sort();
-
-  }, [borrowers]);
-
-
-  const filteredBorrowers = useMemo(() => {
-
-    return borrowers.filter(
-      (borrower) => {
-
-        const matchesSearch =
-          borrower.borrower_name
-            ?.toLowerCase()
-            .includes(
-              search.toLowerCase()
-            );
-
-
-        const matchesSector =
-          sector === "ALL"
-          ||
-          borrower.sector === sector;
-
-
-        return (
-          matchesSearch &&
-          matchesSector
-        );
-
-      }
-    );
-
-  }, [
-    borrowers,
-    search,
-    sector,
-  ]);
-
-
+    return () => {
+      active = false;
+    };
+  }, [attempt]);
+  const sectors = useMemo(
+    () =>
+      [...new Set(data?.borrowers.map((b) => b.sector).filter(Boolean))].sort(),
+    [data],
+  );
+  const rows =
+    data?.borrowers.filter(
+      (b) =>
+        b.borrower_name.toLowerCase().includes(search.trim().toLowerCase()) &&
+        (sector === "ALL" || sector === b.sector) &&
+        (priority === "ALL" ||
+          priority === data.map[b.id]?.intervention_priority),
+    ) || [];
   return (
     <div className="page">
-
       <Header
-        title="Borrower Directory"
-        subtitle="Search the lending portfolio and open borrower-level risk intelligence."
+        title="Borrower directory"
+        subtitle="Every borrower, their financial exposure and the evidence available for review."
       />
-
-
       <section className="section-card">
-
         <div className="section-toolbar">
-
           <input
-            type="text"
-            placeholder="Search borrower..."
-            value={search}
-            onChange={(event) =>
-              setSearch(
-                event.target.value
-              )
-            }
+            aria-label="Search borrower directory"
             className="search-control"
-          />
-
-
-          <select
-            value={sector}
-            onChange={(event) =>
-              setSector(
-                event.target.value
-              )
+            placeholder="Search borrower…"
+            value={search}
+            onChange={(e) =>
+              setParams(e.target.value ? { q: e.target.value } : {}, {
+                replace: true,
+              })
             }
+          />
+          <select
+            aria-label="Filter by sector"
             className="filter-control"
+            value={sector}
+            onChange={(e) => setSector(e.target.value)}
           >
-
-            <option value="ALL">
-              All sectors
-            </option>
-
-            {sectors.map(
-              (sectorName) => (
-
-                <option
-                  key={sectorName}
-                  value={sectorName}
-                >
-                  {sectorName}
-                </option>
-
-              )
-            )}
-
+            <option value="ALL">All sectors</option>
+            {sectors.map((s) => (
+              <option key={s}>{s}</option>
+            ))}
           </select>
-
+          <select
+            aria-label="Filter by priority"
+            className="filter-control"
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+          >
+            <option value="ALL">All priorities</option>
+            {["URGENT", "HIGH", "MEDIUM", "LOW", "INSUFFICIENT_DATA"].map(
+              (p) => (
+                <option value={p} key={p}>
+                  {label(p)}
+                </option>
+              ),
+            )}
+          </select>
+          <span className="muted-text">
+            {data ? `${rows.length} borrowers` : "Loading…"}
+          </span>
         </div>
-
-
-        <div className="table-scroll">
-
-          <table className="data-table">
-
-            <thead>
-              <tr>
-                <th>Borrower</th>
-                <th>Sector</th>
-                <th>Exposure</th>
-                <th>Intervention Priority</th>
-                <th>Coverage</th>
-              </tr>
-            </thead>
-
-
-            <tbody>
-
-              {filteredBorrowers.map(
-                (borrower) => {
-
-                  const intelligence =
-                    interventionMap[
-                      borrower.id
-                    ];
-
-
+        {error ? (
+          <div className="empty-state" role="alert">
+            <p>{error}</p>
+            <button
+              className="secondary-button"
+              onClick={() => {
+                setError("");
+                setAttempt((a) => a + 1);
+              }}
+            >
+              Try again
+            </button>
+          </div>
+        ) : !data ? (
+          <div className="empty-state" role="status">
+            Loading borrower intelligence…
+          </div>
+        ) : (
+          <div className="table-scroll">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Borrower</th>
+                  <th>Sector</th>
+                  <th>Exposure</th>
+                  <th>Intervention priority</th>
+                  <th>History coverage</th>
+                  <th>
+                    <span className="sr-only">Review</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((b) => {
+                  const a = data.map[b.id];
                   return (
-                    <tr
-                      key={
-                        borrower.id
-                      }
-                    >
-
+                    <tr key={b.id}>
                       <td>
-
                         <Link
-                          to={
-                            `/borrower/${borrower.id}`
-                          }
                           className="borrower-link"
+                          to={`/borrower/${b.id}`}
                         >
-                          {
-                            borrower
-                              .borrower_name
-                          }
+                          {b.borrower_name}
                         </Link>
-
                       </td>
-
-
+                      <td>{b.sector || "—"}</td>
+                      <td>{money(b.loan_amount)} Cr</td>
                       <td>
-                        {
-                          borrower.sector
-                          || "—"
-                        }
+                        <span
+                          className={`priority-badge ${a?.intervention_priority?.toLowerCase() || "insufficient_data"}`}
+                        >
+                          {label(a?.intervention_priority)}
+                        </span>
                       </td>
-
-
+                      <td>{a?.metrics_analyzed || 0} / 4 metrics</td>
                       <td>
-                        {
-                          borrower.loan_amount
-                          ?? "—"
-                        }
+                        <Link
+                          className="row-arrow"
+                          to={`/borrower/${b.id}`}
+                          aria-label={`Open ${b.borrower_name}`}
+                        >
+                          <Icon name="arrow" size={16} />
+                        </Link>
                       </td>
-
-
-                      <td>
-
-                        {intelligence ? (
-
-                          <span
-                            className={
-                              `priority-badge ${
-                                intelligence
-                                  .intervention_priority
-                                  .toLowerCase()
-                              }`
-                            }
-                          >
-                            {
-                              intelligence
-                                .intervention_priority
-                            }
-                          </span>
-
-                        ) : "—"}
-
-                      </td>
-
-
-                      <td>
-
-                        {
-                          intelligence
-                            ?.metrics_analyzed
-                          > 0
-                            ? "Sufficient History"
-                            : "Insufficient History"
-                        }
-
-                      </td>
-
                     </tr>
                   );
-
-                }
-              )}
-
-            </tbody>
-
-          </table>
-
-        </div>
-
+                })}
+              </tbody>
+            </table>
+            {!rows.length && (
+              <div className="empty-state">
+                <h3>No matching borrowers</h3>
+                <p>Try a different name or clear your filters.</p>
+                <button
+                  className="secondary-button"
+                  onClick={() => {
+                    setParams({});
+                    setSector("ALL");
+                    setPriority("ALL");
+                  }}
+                >
+                  Clear filters
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </section>
-
     </div>
   );
 }
-
-
-export default BorrowersPage;

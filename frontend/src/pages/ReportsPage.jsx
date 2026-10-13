@@ -1,3 +1,4 @@
+import { apiFetch } from "../utils/api";
 import { useEffect, useState } from "react";
 
 import Header from "../components/Header";
@@ -29,11 +30,11 @@ function ReportsPage() {
   useEffect(() => {
 
     Promise.all([
-      fetch("http://127.0.0.1:8000/portfolio_summary"),
-      fetch("http://127.0.0.1:8000/intervention_summary"),
-      fetch("http://127.0.0.1:8000/covenant_summary"),
-      fetch("http://127.0.0.1:8000/intervention_watchlist"),
-      fetch("http://127.0.0.1:8000/covenant_watchlist"),
+      apiFetch("/portfolio_summary"),
+      apiFetch("/intervention_summary"),
+      apiFetch("/covenant_summary"),
+      apiFetch("/intervention_watchlist"),
+      apiFetch("/covenant_watchlist"),
     ])
 
       .then(async (

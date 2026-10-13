@@ -1,3 +1,4 @@
+import { apiFetch } from "../utils/api";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -21,11 +22,11 @@ function InterventionPage() {
   useEffect(() => {
 
     Promise.all([
-      fetch(
-        "http://127.0.0.1:8000/intervention_watchlist"
+      apiFetch(
+        "/intervention_watchlist"
       ),
-      fetch(
-        "http://127.0.0.1:8000/borrowers"
+      apiFetch(
+        "/borrowers"
       ),
     ])
 

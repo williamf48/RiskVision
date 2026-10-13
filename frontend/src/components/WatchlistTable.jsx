@@ -1,3 +1,4 @@
+import { apiFetch } from "../utils/api";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -10,8 +11,8 @@ function WatchlistTable() {
 
   useEffect(() => {
 
-    fetch(
-      "http://127.0.0.1:8000/intervention_watchlist"
+    apiFetch(
+      "/intervention_watchlist"
     )
       .then((response) => {
 

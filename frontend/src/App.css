@@ -15,8 +15,8 @@
     "Segoe UI",
     sans-serif;
 
-  background: #08111f;
-  color: #f8fafc;
+  background: #f5f7fa;
+  color: #192b3f;
 }
 
 
@@ -29,7 +29,7 @@ body {
       rgba(37, 99, 235, 0.08),
       transparent 30%
     ),
-    #08111f;
+    #f5f7fa;
 }
 
 
@@ -62,10 +62,10 @@ a {
 
   padding: 24px 18px;
 
-  background: #0d1726;
+  background: #ffffff;
 
   border-right:
-    1px solid #1e293b;
+    1px solid #dde5eb;
 
   z-index: 20;
 }
@@ -130,7 +130,7 @@ a {
 
   border-radius: 8px;
 
-  color: #94a3b8;
+  color: #718397;
 
   text-decoration: none;
 
@@ -144,16 +144,16 @@ a {
 
 
 .sidebar-link:hover {
-  background: #172235;
+  background: #f6f8fa;
 
-  color: #f8fafc;
+  color: #192b3f;
 }
 
 
 .sidebar-link.active {
-  background: #1e3a5f;
+  background: #eaf3f0;
 
-  color: #60a5fa;
+  color: #247e72;
 
   border-left:
     3px solid #3b82f6;
@@ -166,7 +166,7 @@ a {
   padding: 16px 8px 0;
 
   border-top:
-    1px solid #1e293b;
+    1px solid #dde5eb;
 
   color: #475569;
 
@@ -212,7 +212,7 @@ a {
 .page-header p {
   margin-top: 7px;
 
-  color: #94a3b8;
+  color: #718397;
 
   font-size: 14px;
 }
@@ -240,10 +240,10 @@ a {
 .alerts-card,
 .section-card,
 .intervention-card {
-  background: #111d2e;
+  background: #f7f9fc;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 12px;
 
@@ -319,12 +319,12 @@ a {
 
   text-align: left;
 
-  color: #94a3b8;
+  color: #718397;
 
-  background: #172438;
+  background: #f1f6f5;
 
   border-bottom:
-    1px solid #2a3a50;
+    1px solid #d7e0e9;
 
   font-size: 11px;
   text-transform: uppercase;
@@ -338,7 +338,7 @@ a {
   padding: 13px 14px;
 
   border-bottom:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   font-size: 13px;
 }
@@ -357,7 +357,7 @@ a {
    ====================================================== */
 
 .borrower-link {
-  color: #e2e8f0;
+  color: #465c70;
 
   text-decoration: none;
 
@@ -366,7 +366,7 @@ a {
 
 
 .borrower-link:hover {
-  color: #60a5fa;
+  color: #247e72;
 }
 
 
@@ -389,10 +389,10 @@ a {
 .summary-card {
   padding: 20px;
 
-  background: #111d2e;
+  background: #f7f9fc;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 12px;
 }
@@ -401,7 +401,7 @@ a {
 .summary-card span {
   display: block;
 
-  color: #94a3b8;
+  color: #718397;
 
   font-size: 12px;
 }
@@ -463,12 +463,12 @@ a {
 
   padding: 9px 12px;
 
-  color: #f8fafc;
+  color: #192b3f;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #2a3a50;
+    1px solid #d7e0e9;
 
   border-radius: 8px;
 
@@ -509,49 +509,49 @@ a {
 
 
 .priority-badge.urgent {
-  color: #fecaca;
+  color: #ba5860;
   background: rgba(220, 38, 38, 0.18);
 }
 
 
 .priority-badge.high {
-  color: #fed7aa;
+  color: #b57c36;
   background: rgba(234, 88, 12, 0.16);
 }
 
 
 .priority-badge.medium {
-  color: #fef08a;
+  color: #a88a41;
   background: rgba(202, 138, 4, 0.15);
 }
 
 
 .priority-badge.low {
-  color: #bbf7d0;
+  color: #2a8363;
   background: rgba(22, 163, 74, 0.14);
 }
 
 
 .priority-badge.insufficient_data {
-  color: #94a3b8;
-  background: #1e293b;
+  color: #718397;
+  background: #dde5eb;
 }
 
 
 .severity-badge.high {
-  color: #fecaca;
+  color: #ba5860;
   background: rgba(220, 38, 38, 0.18);
 }
 
 
 .severity-badge.medium {
-  color: #fde68a;
+  color: #a48136;
   background: rgba(202, 138, 4, 0.15);
 }
 
 
 .severity-badge.low {
-  color: #bbf7d0;
+  color: #2a8363;
   background: rgba(22, 163, 74, 0.14);
 }
 
@@ -623,7 +623,7 @@ a {
 
 
 .intervention-metrics strong {
-  color: #f8fafc;
+  color: #192b3f;
 
   font-size: 17px;
 }
@@ -663,12 +663,12 @@ a {
 
 
 .secondary-button {
-  color: #cbd5e1;
+  color: #4f6276;
 
-  background: #172438;
+  background: #f1f6f5;
 
   border:
-    1px solid #2a3a50;
+    1px solid #d7e0e9;
 }
 
 
@@ -678,7 +678,7 @@ a {
   padding-top: 18px;
 
   border-top:
-    1px solid #28384d;
+    1px solid #d7e1e7;
 }
 
 
@@ -691,7 +691,7 @@ a {
 .expanded-details ul {
   padding-left: 20px;
 
-  color: #cbd5e1;
+  color: #4f6276;
 
   line-height: 1.7;
 
@@ -723,10 +723,10 @@ a {
 
   padding: 16px;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 9px;
 }
@@ -735,7 +735,7 @@ a {
 .alert-card h3 {
   margin-top: 7px;
 
-  color: #94a3b8;
+  color: #718397;
 
   font-size: 12px;
   font-weight: 500;
@@ -750,7 +750,7 @@ a {
   padding: 14px 0;
 
   border-bottom:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 }
 
 
@@ -762,7 +762,7 @@ a {
 .alert-item p {
   margin-top: 6px;
 
-  color: #94a3b8;
+  color: #718397;
 
   font-size: 12px;
 }
@@ -796,7 +796,7 @@ a {
   margin:
     12px auto 0;
 
-  color: #94a3b8;
+  color: #718397;
 }
 
 
@@ -920,7 +920,7 @@ a {
 
   margin-bottom: 16px;
 
-  color: #60a5fa;
+  color: #247e72;
 
   text-decoration: none;
 
@@ -946,7 +946,7 @@ a {
 .borrower-title-row p {
   margin-top: 6px;
 
-  color: #94a3b8;
+  color: #718397;
 
   font-size: 13px;
 }
@@ -974,10 +974,10 @@ a {
 .borrower-summary-card {
   padding: 18px;
 
-  background: #111d2e;
+  background: #f7f9fc;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 10px;
 }
@@ -1014,10 +1014,10 @@ a {
 
   padding: 5px;
 
-  background: #0d1726;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 10px;
 }
@@ -1026,7 +1026,7 @@ a {
 .borrower-tab {
   padding: 10px 16px;
 
-  color: #94a3b8;
+  color: #718397;
 
   background: transparent;
 
@@ -1041,16 +1041,16 @@ a {
 
 
 .borrower-tab:hover {
-  color: #f8fafc;
+  color: #192b3f;
 
-  background: #172438;
+  background: #f1f6f5;
 }
 
 
 .borrower-tab.active {
-  color: #60a5fa;
+  color: #247e72;
 
-  background: #1e3a5f;
+  background: #eaf3f0;
 }
 
 
@@ -1105,10 +1105,10 @@ a {
 .detail-grid > div {
   padding: 14px;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 8px;
 }
@@ -1151,10 +1151,10 @@ a {
 
   text-align: center;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 8px;
 }
@@ -1183,7 +1183,7 @@ a {
 .intelligence-list {
   padding-left: 20px;
 
-  color: #cbd5e1;
+  color: #4f6276;
 
   line-height: 1.8;
 
@@ -1223,12 +1223,12 @@ a {
 .history-coverage {
   padding: 7px 10px;
 
-  color: #94a3b8;
+  color: #718397;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 7px;
 
@@ -1250,12 +1250,12 @@ a {
 .metric-button {
   padding: 8px 12px;
 
-  color: #94a3b8;
+  color: #718397;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #29384d;
+    1px solid #e1e7ef;
 
   border-radius: 7px;
 
@@ -1269,9 +1269,9 @@ a {
 
 
 .metric-button.active {
-  color: #dbeafe;
+  color: #587fb6;
 
-  background: #1e3a5f;
+  background: #eaf3f0;
 
   border-color: #3b82f6;
 }
@@ -1289,9 +1289,9 @@ a {
 .history-tooltip {
   padding: 12px;
 
-  color: #e2e8f0;
+  color: #465c70;
 
-  background: #08111f;
+  background: #f5f7fa;
 
   border:
     1px solid #334155;
@@ -1307,7 +1307,7 @@ a {
 .history-tooltip p {
   margin-top: 5px;
 
-  color: #94a3b8;
+  color: #718397;
 
   font-size: 11px;
 }
@@ -1333,10 +1333,10 @@ a {
 
   padding: 16px;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 9px;
 }
@@ -1364,10 +1364,10 @@ a {
 
   text-align: center;
 
-  background: #111d2e;
+  background: #f7f9fc;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 12px;
 }
@@ -1377,7 +1377,7 @@ a {
   margin:
     10px 0 24px;
 
-  color: #94a3b8;
+  color: #718397;
 }
 
 
@@ -1476,7 +1476,7 @@ a {
 
 
 .portfolio-result-count strong {
-  color: #cbd5e1;
+  color: #4f6276;
 }
 
 
@@ -1485,19 +1485,19 @@ a {
 
   text-align: center;
 
-  color: #94a3b8;
+  color: #718397;
 }
 
 
 .portfolio-state h3 {
   margin-bottom: 12px;
 
-  color: #e2e8f0;
+  color: #465c70;
 }
 
 
 .portfolio-state.error {
-  color: #fca5a5;
+  color: #be4c58;
 }
 
 
@@ -1516,7 +1516,7 @@ a {
 .row-expand-button {
   padding: 6px 10px;
 
-  color: #93c5fd;
+  color: #467cba;
 
   background: transparent;
 
@@ -1533,7 +1533,7 @@ a {
 
 
 .row-expand-button:hover {
-  background: #1e3a5f;
+  background: #eaf3f0;
 
   border-color: #3b82f6;
 }
@@ -1542,7 +1542,7 @@ a {
 .portfolio-expanded-row td {
   padding: 0;
 
-  background: #0b1626;
+  background: #f8fafc;
 }
 
 
@@ -1597,10 +1597,10 @@ a {
 
   text-align: center;
 
-  background: #111d2e;
+  background: #f7f9fc;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 8px;
 }
@@ -1641,10 +1641,10 @@ a {
 .expanded-intelligence-grid > div {
   padding: 16px;
 
-  background: #111d2e;
+  background: #f7f9fc;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 8px;
 }
@@ -1660,7 +1660,7 @@ a {
 .expanded-intelligence-grid ul {
   padding-left: 18px;
 
-  color: #94a3b8;
+  color: #718397;
 
   font-size: 11px;
 
@@ -1738,10 +1738,10 @@ a {
 
   color: inherit;
 
-  background: #111d2e;
+  background: #f7f9fc;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 11px;
 
@@ -1758,7 +1758,7 @@ a {
   transform:
     translateY(-2px);
 
-  background: #142238;
+  background: #f6f9fb;
 
   border-color: #3b82f6;
 }
@@ -1791,7 +1791,7 @@ a {
 
   margin-top: 10px;
 
-  color: #60a5fa;
+  color: #247e72;
 
   font-size: 10px;
 }
@@ -1820,7 +1820,7 @@ a {
 
 
 .executive-kpi-card.urgent strong {
-  color: #fca5a5;
+  color: #be4c58;
 }
 
 
@@ -1840,10 +1840,10 @@ a {
 .dashboard-section {
   padding: 20px;
 
-  background: #111d2e;
+  background: #f7f9fc;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 12px;
 }
@@ -1876,7 +1876,7 @@ a {
 
 
 .dashboard-text-link {
-  color: #60a5fa;
+  color: #247e72;
 
   text-decoration: none;
 
@@ -1887,7 +1887,7 @@ a {
 
 
 .dashboard-text-link:hover {
-  color: #93c5fd;
+  color: #467cba;
 }
 
 
@@ -1907,10 +1907,10 @@ a {
 
   color: inherit;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 8px;
 
@@ -1923,7 +1923,7 @@ a {
 
 
 .quick-action-card:hover {
-  background: #142238;
+  background: #f6f9fb;
 
   border-color: #3b82f6;
 }
@@ -1954,12 +1954,12 @@ a {
 
   text-align: center;
 
-  color: #94a3b8;
+  color: #718397;
 }
 
 
 .dashboard-state.error {
-  color: #fca5a5;
+  color: #be4c58;
 }
 
 
@@ -2082,10 +2082,10 @@ outer visual layer where appropriate.
 .interactive-alert-card {
   padding: 17px;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 9px;
 
@@ -2096,7 +2096,7 @@ outer visual layer where appropriate.
 
 
 .interactive-alert-card.expanded {
-  background: #101d30;
+  background: #f7f9fa;
 
   border-color: #334155;
 }
@@ -2115,7 +2115,7 @@ outer visual layer where appropriate.
 .interactive-alert-header h3 {
   margin-top: 6px;
 
-  color: #94a3b8;
+  color: #718397;
 
   font-size: 12px;
 
@@ -2150,17 +2150,17 @@ outer visual layer where appropriate.
   padding-top: 18px;
 
   border-top:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 }
 
 
 .alert-expanded-content > div {
   padding: 12px;
 
-  background: #111d2e;
+  background: #f7f9fc;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 7px;
 }
@@ -2212,17 +2212,17 @@ outer visual layer where appropriate.
   padding-top: 20px;
 
   border-top:
-    1px solid #28384d;
+    1px solid #d7e1e7;
 }
 
 
 .intervention-expanded-grid > div {
   padding: 16px;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 8px;
 }
@@ -2238,7 +2238,7 @@ outer visual layer where appropriate.
 .intervention-expanded-grid ul {
   padding-left: 18px;
 
-  color: #94a3b8;
+  color: #718397;
 
   line-height: 1.75;
 
@@ -2302,9 +2302,9 @@ outer visual layer where appropriate.
 
   text-align: center;
 
-  background: #0c1727;
+  background: #ffffff;
 
-  border: 1px solid #1e2c40;
+  border: 1px solid #e3e8ef;
 
   border-radius: 8px;
 }
@@ -2360,9 +2360,9 @@ outer visual layer where appropriate.
 .report-kpi-card {
   padding: 18px;
 
-  background: #111d2e;
+  background: #f7f9fc;
 
-  border: 1px solid #1e2c40;
+  border: 1px solid #e3e8ef;
 
   border-radius: 10px;
 }
@@ -2419,16 +2419,16 @@ outer visual layer where appropriate.
 
   padding: 11px 12px;
 
-  background: #0c1727;
+  background: #ffffff;
 
-  border: 1px solid #1e2c40;
+  border: 1px solid #e3e8ef;
 
   border-radius: 7px;
 }
 
 
 .report-stat-list span {
-  color: #94a3b8;
+  color: #718397;
 
   font-size: 11px;
 }
@@ -2497,10 +2497,10 @@ outer visual layer where appropriate.
 .analytics-kpi-grid > div {
   padding: 15px;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 8px;
 }
@@ -2542,10 +2542,10 @@ outer visual layer where appropriate.
 
   padding: 18px;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 9px;
 }
@@ -2561,14 +2561,14 @@ outer visual layer where appropriate.
   padding-bottom: 10px;
 
   border-bottom:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 }
 
 
 .analytics-tab {
   padding: 8px 13px;
 
-  color: #94a3b8;
+  color: #718397;
 
   background: transparent;
 
@@ -2585,14 +2585,14 @@ outer visual layer where appropriate.
 .analytics-tab:hover {
   color: white;
 
-  background: #16243a;
+  background: #eff4f7;
 }
 
 
 .analytics-tab.active {
-  color: #93c5fd;
+  color: #467cba;
 
-  background: #1e3a5f;
+  background: #eaf3f0;
 }
 
 
@@ -2642,16 +2642,16 @@ outer visual layer where appropriate.
   margin-bottom: 18px;
   padding: 16px 18px;
 
-  background: #251d0d;
+  background: #fffaf0;
 
   border:
-    1px solid #665116;
+    1px solid #dfc58f;
 
   border-radius: 9px;
 }
 
 .validation-notice strong {
-  color: #facc15;
+  color: #ad843b;
   font-size: 11px;
   letter-spacing: 0.08em;
 }
@@ -2659,7 +2659,7 @@ outer visual layer where appropriate.
 .validation-notice p {
   margin-top: 7px;
 
-  color: #cbd5e1;
+  color: #4f6276;
 
   font-size: 11px;
   line-height: 1.6;
@@ -2681,10 +2681,10 @@ outer visual layer where appropriate.
 .validation-metric {
   padding: 16px;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 8px;
 }
@@ -2719,7 +2719,7 @@ outer visual layer where appropriate.
 
   color: #64748b;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border-radius: 7px;
 
@@ -2784,10 +2784,10 @@ outer visual layer where appropriate.
 
   padding: 18px;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 9px;
 }
@@ -2798,10 +2798,10 @@ outer visual layer where appropriate.
 
   padding: 18px;
 
-  background: #0c1727;
+  background: #ffffff;
 
   border:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 
   border-radius: 9px;
 }
@@ -2821,7 +2821,7 @@ outer visual layer where appropriate.
   padding: 12px 0;
 
   border-bottom:
-    1px solid #1e2c40;
+    1px solid #e3e8ef;
 }
 
 
@@ -2847,9 +2847,9 @@ outer visual layer where appropriate.
 .synthetic-badge {
   padding: 6px 9px;
 
-  color: #facc15 !important;
+  color: #ad843b !important;
 
-  background: #30280e;
+  background: #fff6e5;
 
   border-radius: 999px;
 

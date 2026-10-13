@@ -1,3 +1,4 @@
+from sqlalchemy import text
 import pandas as pd
 
 from connection import engine
@@ -104,8 +105,8 @@ def get_metric_history(
         metric_value,
         observation_date
     FROM borrower_metric_observations
-    WHERE borrower_id = %(borrower_id)s
-      AND metric_code = %(metric_code)s
+    WHERE borrower_id = :borrower_id
+      AND metric_code = :metric_code
     """
 
     params = {
@@ -133,13 +134,13 @@ def get_metric_history(
 
 
         query += """
-          AND observation_date <= %(as_of_date)s
+          AND observation_date <= :as_of_date
         """
 
 
         params[
             "as_of_date"
-        ] = cutoff_date
+        ] = cutoff_date.isoformat()
 
 
     query += """
@@ -148,7 +149,7 @@ def get_metric_history(
 
 
     return pd.read_sql(
-        query,
+        text(query),
         engine,
         params=params,
     )

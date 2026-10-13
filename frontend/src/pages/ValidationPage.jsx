@@ -1,3 +1,4 @@
+import { apiFetch } from "../utils/api";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -14,7 +15,7 @@ import {
 import Header from "../components/Header";
 
 
-const API_BASE = "http://127.0.0.1:8000";
+
 
 
 const PRIORITY_SCORE = {
@@ -53,7 +54,7 @@ function ValidationPage() {
     useState(true);
 
   const [borrowerLoading, setBorrowerLoading] =
-    useState(false);
+    useState(true);
 
   const [error, setError] =
     useState(null);
@@ -65,8 +66,8 @@ function ValidationPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`${API_BASE}/borrowers`),
-      fetch(`${API_BASE}/backtest_summary`),
+      apiFetch(`/borrowers`),
+      apiFetch(`/backtest_summary`),
     ])
 
       .then(async (responses) => {
@@ -126,19 +127,19 @@ function ValidationPage() {
   // =====================================================
 
   useEffect(() => {
+    let active = true;
     if (!selectedBorrowerId) {
       return;
     }
 
-    setBorrowerLoading(true);
 
     Promise.all([
-      fetch(
-        `${API_BASE}/borrowers/${selectedBorrowerId}/replay`
+      apiFetch(
+        `/borrowers/${selectedBorrowerId}/replay`
       ),
 
-      fetch(
-        `${API_BASE}/borrowers/${selectedBorrowerId}/backtest`
+      apiFetch(
+        `/borrowers/${selectedBorrowerId}/backtest`
       ),
     ])
 
@@ -167,6 +168,7 @@ function ValidationPage() {
       })
 
       .then((data) => {
+        if (!active) return;
         setReplay(
           data.replay
         );
@@ -179,6 +181,7 @@ function ValidationPage() {
       })
 
       .catch((error) => {
+        if (!active) return;
         console.error(
           "Borrower replay error:",
           error
@@ -190,6 +193,7 @@ function ValidationPage() {
         setBorrowerLoading(false);
       });
 
+    return () => { active = false; };
   }, [selectedBorrowerId]);
 
 
@@ -441,11 +445,10 @@ function ValidationPage() {
             value={
               selectedBorrowerId
             }
-            onChange={(event) =>
-              setSelectedBorrowerId(
-                event.target.value
-              )
-            }
+            onChange={(event) => {
+              setBorrowerLoading(true);
+              setSelectedBorrowerId(event.target.value);
+            }}
             className="filter-control validation-select"
           >
 
